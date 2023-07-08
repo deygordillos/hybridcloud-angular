@@ -1,30 +1,34 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Customer } from '../api/customer';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class CustomerService {
 
-    constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { }
 
-    getCustomersSmall() {
-        return this.http.get<any>('assets/demo/data/customers-small.json')
-            .toPromise()
-            .then(res => res.data as Customer[])
-            .then(data => data);
-    }
+  getCustomersSmall() {
+    const request = this.http.get<any>('assets/demo/data/customers-small.json');
+    const response = lastValueFrom(request);
 
-    getCustomersMedium() {
-        return this.http.get<any>('assets/demo/data/customers-medium.json')
-            .toPromise()
-            .then(res => res.data as Customer[])
-            .then(data => data);
-    }
+    return response.then(res => res.data as Customer[])
+      .then(data => data);
+  }
 
-    getCustomersLarge() {
-        return this.http.get<any>('assets/demo/data/customers-large.json')
-            .toPromise()
-            .then(res => res.data as Customer[])
-            .then(data => data);
-    }
+  getCustomersMedium() {
+    const request = this.http.get<any>('assets/demo/data/customers-medium.json');
+    const response = lastValueFrom(request);
+
+    return response.then(res => res.data as Customer[])
+      .then(data => data);
+  }
+
+  getCustomersLarge() {
+    const request = this.http.get<any>('assets/demo/data/customers-large.json');
+    const response = lastValueFrom(request);
+
+    return response.then(res => res.data as Customer[])
+      .then(data => data);
+  }
 }
