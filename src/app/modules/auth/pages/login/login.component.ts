@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { LayoutService } from 'src/app/layout/service/app.layout.service';
-import { UtilsService } from 'src/app/services/utils/utils.service';
+import { LayoutService } from '@app/layout/service/app.layout.service';
+import { AuthService } from '@app/services/auth/auth.service';
+import { UtilsService } from '@app/services/utils/utils.service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,8 @@ export class LoginComponent {
 
   constructor(
     public layoutService: LayoutService,
-    private utilsService: UtilsService
+    private utilsService: UtilsService,
+    private authService: AuthService
   ) {
     this.formLogin = new FormGroup({
       usuario: new FormControl<string|null>('', Validators.compose([Validators.required])),
@@ -40,6 +42,8 @@ export class LoginComponent {
     console.log(usuario, password, recuerdame);
 
     this.loading = true;
+
+    //this.authService.login(usuario, password, recuerdame);
   }
 
   async openModalConfirm(): Promise<void> {

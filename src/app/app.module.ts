@@ -13,6 +13,8 @@ import { NodeService } from './demo/service/node.service';
 import { PhotoService } from './demo/service/photo.service';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { TokenInterceptor } from './interceptors/token-interceptor/token.interceptor';
 
 @NgModule({
   declarations: [
@@ -26,6 +28,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
   ],
   providers: [
     { provide: LocationStrategy, useClass: PathLocationStrategy  /* HashLocationStrategy */ },
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     CountryService,
     CustomerService,
     EventService,
