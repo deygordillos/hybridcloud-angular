@@ -1,4 +1,4 @@
-# Hybrid cloud 1
+# Hybrid cloud
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.0.4 - update 15.2.9.
 
