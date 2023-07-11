@@ -22,11 +22,20 @@
       "@app/*": [
         "src/app/*"
       ],
+      "@interceptors/*": [
+        "src/app/interceptors/*"
+      ],
+      "@layout/*": [
+        "src/app/layout/*"
+      ],
       "@models/*": [
         "src/app/models/*"
       ],
       "@modules/*": [
         "src/app/modules/*"
+      ],
+      "@services/*": [
+        "src/app/services/*"
       ]
     }
   },
