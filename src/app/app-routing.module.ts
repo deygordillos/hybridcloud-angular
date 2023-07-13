@@ -2,7 +2,7 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { NotfoundComponent } from './demo/components/notfound/notfound.component';
 import { AppLayoutComponent } from './layout/app.layout.component';
-import { environment } from 'src/environments/environment';
+import { environment } from '@environments/environment';
 
 let routesDemo: Routes = [
   {

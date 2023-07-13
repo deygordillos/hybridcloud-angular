@@ -22,6 +22,9 @@
       "@app/*": [
         "src/app/*"
       ],
+      "@environments/*": [
+        "src/environments/*"
+      ],
       "@interceptors/*": [
         "src/app/interceptors/*"
       ],
