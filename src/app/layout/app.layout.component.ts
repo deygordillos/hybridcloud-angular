@@ -4,6 +4,7 @@ import { filter, Subscription } from 'rxjs';
 import { LayoutService } from './service/app.layout.service';
 import { AppSidebarComponent } from './app.sidebar.component';
 import { AppTopBarComponent } from './app.topbar.component';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-layout',
@@ -20,11 +21,15 @@ export class AppLayoutComponent implements OnDestroy {
 
   @ViewChild(AppTopBarComponent) appTopbar!: AppTopBarComponent;
 
+  isProduction: boolean;
+
   constructor(
     public layoutService: LayoutService,
     public renderer: Renderer2,
     public router: Router
   ) {
+    this.isProduction = environment.production;
+
     this.overlayMenuOpenSubscription =
       this.layoutService.overlayOpen$.subscribe(() => {
         if (!this.menuOutsideClickListener) {
