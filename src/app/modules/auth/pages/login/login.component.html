@@ -39,9 +39,9 @@
             formControlName="password"
             placeholder="Contraseña"
             [toggleMask]="true"
-            styleClass="mb-1"
+            styleClass="mb-1 w-full"
             [feedback]="false"
-            inputStyleClass="w-full p-3 md:w-30rem"
+            inputStyleClass="sm:w-12 w-full p-3"
             [ngClass]="{ 'ng-invalid ng-dirty': formLogin.controls['password'].touched && formLogin.controls['password'].hasError('required') }"
           >
           </p-password>
@@ -52,7 +52,7 @@
               <label for="rememberme">Recuérdame</label>
             </div>
             <a class="font-medium no-underline ml-2 text-right cursor-pointer"
-              style="color: var(--primary-color)" (click)="openModalConfirm()">¿Olvidaste tu contraseña?</a>
+              style="color: var(--primary-color)" (click)="openModalRecuperarContrasena()">¿Olvidaste tu contraseña?</a>
           </div>
 
           <button pButton pRipple label="Iniciar Sesión" class="w-full p-3 text-xl" [loading]="loading"></button>

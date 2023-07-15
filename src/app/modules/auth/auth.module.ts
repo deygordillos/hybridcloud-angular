@@ -11,10 +11,12 @@ import { PasswordModule } from 'primeng/password';
 import { MessagesModule } from 'primeng/messages';
 import { MessageModule } from 'primeng/message';
 import { KeyFilterModule } from 'primeng/keyfilter';
+import { RecuperarContrasenaComponent } from './components/recuperar-contrasena/recuperar-contrasena.component';
 
 @NgModule({
   declarations: [
     LoginComponent,
+    RecuperarContrasenaComponent,
   ],
   imports: [
     CommonModule,

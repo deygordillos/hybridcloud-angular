@@ -14,7 +14,10 @@ import { PhotoService } from './demo/service/photo.service';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { TokenInterceptor } from './interceptors/token-interceptor/token.interceptor';
+import { TokenInterceptor } from '@interceptors/token-interceptor/token.interceptor';
+import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -24,7 +27,9 @@ import { TokenInterceptor } from './interceptors/token-interceptor/token.interce
   imports: [
     AppRoutingModule,
     AppLayoutModule,
-    ConfirmDialogModule
+    DynamicDialogModule,
+    ConfirmDialogModule,
+    ToastModule
   ],
   providers: [
     { provide: LocationStrategy, useClass: PathLocationStrategy  /* HashLocationStrategy */ },
@@ -36,7 +41,10 @@ import { TokenInterceptor } from './interceptors/token-interceptor/token.interce
     NodeService,
     PhotoService,
     ProductService,
-    ConfirmationService
+
+    ConfirmationService,
+    DialogService,
+    MessageService
   ],
   bootstrap: [AppComponent],
 })

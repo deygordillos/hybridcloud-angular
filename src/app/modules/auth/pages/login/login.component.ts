@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LayoutService } from '@app/layout/service/app.layout.service';
 import { AuthService } from '@app/services/auth/auth.service';
 import { UtilsService } from '@app/services/utils/utils.service';
+import { RecuperarContrasenaComponent } from '../../components/recuperar-contrasena/recuperar-contrasena.component';
 
 @Component({
   selector: 'app-login',
@@ -62,6 +63,27 @@ export class LoginComponent {
       if (!error) {
         console.error('Operación cancelada');
       }
+    }
+  }
+
+  async openModalRecuperarContrasena(): Promise<void> {
+    try {
+      const result = await this.utilsService.openModal(RecuperarContrasenaComponent,{
+        data: {
+          id: 1
+        },
+        header: 'Recuperar contraseña',
+        contentStyle: { overflow: 'auto' },
+        baseZIndex: 10000,
+        maximizable: false,
+        styleClass: 'sm:w-full md:w-5'
+      });
+
+      //if (!result) return;
+
+      console.log(result)
+    } catch (error) {
+      console.error(error);
     }
   }
 }
