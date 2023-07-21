@@ -3,67 +3,74 @@ import { Component } from '@angular/core';
 import { LayoutService } from './service/app.layout.service';
 import { ItemMenu } from '@app/models/itemMenu';
 import { environment } from '@environments/environment';
+import { AuthService } from '@app/services/auth/auth.service';
+import { User } from '@app/models/user.model';
 
 @Component({
   selector: 'app-menu',
   templateUrl: './app.menu.component.html'
 })
 export class AppMenuComponent implements OnInit {
-
   model: ItemMenu[] = [];
+  user: User | null = null;
 
-  constructor(public layoutService: LayoutService) { }
+  constructor(
+    public layoutService: LayoutService,
+    private authService: AuthService
+  ) {
+    this.user = this.authService.getUser();
+  }
 
   ngOnInit() {
     this.model = [
       {
         label: 'Home',
         items: [
-          { label: 'Formas de Pago', icon: 'pi pi-fw pi-credit-card', routerLink: ['/formas-pago'] },
-          { label: 'Monedas', icon: 'pi pi-fw pi-money-bill', routerLink: ['/monedas'] },
-          { label: 'Marcas', icon: 'pi pi-fw pi-table', routerLink: ['/marcas'] },
-          { label: 'Impuestos', icon: 'pi pi-fw pi-bookmark', routerLink: ['/impuestos'] },
-          { label: 'Cargos / Descargos / Ajustes', icon: 'pi pi-fw pi-truck', routerLink: ['/cargos-descargos-ajustes'] },
-          { label: 'Depósitos / Almacenes', icon: 'pi pi-fw pi-box', routerLink: ['/depositos-almacenes'] },
-          { label: 'Familias de Inventario', icon: 'pi pi-fw pi-book', routerLink: ['/familia-inventario'] },
-          { label: 'Productos y Servicios de Inventario', icon: 'pi pi-fw pi-list', routerLink: ['/productos-servicios'] },
-          { label: 'Reportes', icon: 'pi pi-fw pi-file', routerLink: ['/reportes'] }
+          { label: 'Formas de Pago', icon: 'pi pi-fw pi-credit-card', routerLink: ['/app/formas-pago'] },
+          { label: 'Monedas', icon: 'pi pi-fw pi-money-bill', routerLink: ['/app/monedas'] },
+          { label: 'Marcas', icon: 'pi pi-fw pi-table', routerLink: ['/app/marcas'] },
+          { label: 'Impuestos', icon: 'pi pi-fw pi-bookmark', routerLink: ['/app/impuestos'] },
+          { label: 'Cargos / Descargos / Ajustes', icon: 'pi pi-fw pi-truck', routerLink: ['/app/cargos-descargos-ajustes'] },
+          { label: 'Depósitos / Almacenes', icon: 'pi pi-fw pi-box', routerLink: ['/app/depositos-almacenes'] },
+          { label: 'Familias de Inventario', icon: 'pi pi-fw pi-book', routerLink: ['/app/familia-inventario'] },
+          { label: 'Productos y Servicios de Inventario', icon: 'pi pi-fw pi-list', routerLink: ['/app/productos-servicios'] },
+          { label: 'Reportes', icon: 'pi pi-fw pi-file', routerLink: ['/app/reportes'] }
         ],
         visible: true
       },
       {
         label: 'Home',
         items: [
-          { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }
+          { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/app/dashboard'] }
         ],
         visible: !environment.production
       },
       {
         label: 'UI Components',
         items: [
-          { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },
-          { label: 'Input', icon: 'pi pi-fw pi-check-square', routerLink: ['/uikit/input'] },
-          { label: 'Float Label', icon: 'pi pi-fw pi-bookmark', routerLink: ['/uikit/floatlabel'] },
-          { label: 'Invalid State', icon: 'pi pi-fw pi-exclamation-circle', routerLink: ['/uikit/invalidstate'] },
-          { label: 'Button', icon: 'pi pi-fw pi-box', routerLink: ['/uikit/button'] },
-          { label: 'Table', icon: 'pi pi-fw pi-table', routerLink: ['/uikit/table'] },
-          { label: 'List', icon: 'pi pi-fw pi-list', routerLink: ['/uikit/list'] },
-          { label: 'Tree', icon: 'pi pi-fw pi-share-alt', routerLink: ['/uikit/tree'] },
-          { label: 'Panel', icon: 'pi pi-fw pi-tablet', routerLink: ['/uikit/panel'] },
-          { label: 'Overlay', icon: 'pi pi-fw pi-clone', routerLink: ['/uikit/overlay'] },
-          { label: 'Media', icon: 'pi pi-fw pi-image', routerLink: ['/uikit/media'] },
-          { label: 'Menu', icon: 'pi pi-fw pi-bars', routerLink: ['/uikit/menu'], routerLinkActiveOptions: { paths: 'subset', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'ignored' } },
-          { label: 'Message', icon: 'pi pi-fw pi-comment', routerLink: ['/uikit/message'] },
-          { label: 'File', icon: 'pi pi-fw pi-file', routerLink: ['/uikit/file'] },
-          { label: 'Chart', icon: 'pi pi-fw pi-chart-bar', routerLink: ['/uikit/charts'] },
-          { label: 'Misc', icon: 'pi pi-fw pi-circle', routerLink: ['/uikit/misc'] }
+          { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/app/uikit/formlayout'] },
+          { label: 'Input', icon: 'pi pi-fw pi-check-square', routerLink: ['/app/uikit/input'] },
+          { label: 'Float Label', icon: 'pi pi-fw pi-bookmark', routerLink: ['/app/uikit/floatlabel'] },
+          { label: 'Invalid State', icon: 'pi pi-fw pi-exclamation-circle', routerLink: ['/app/uikit/invalidstate'] },
+          { label: 'Button', icon: 'pi pi-fw pi-box', routerLink: ['/app/uikit/button'] },
+          { label: 'Table', icon: 'pi pi-fw pi-table', routerLink: ['/app/uikit/table'] },
+          { label: 'List', icon: 'pi pi-fw pi-list', routerLink: ['/app/uikit/list'] },
+          { label: 'Tree', icon: 'pi pi-fw pi-share-alt', routerLink: ['/app/uikit/tree'] },
+          { label: 'Panel', icon: 'pi pi-fw pi-tablet', routerLink: ['/app/uikit/panel'] },
+          { label: 'Overlay', icon: 'pi pi-fw pi-clone', routerLink: ['/app/uikit/overlay'] },
+          { label: 'Media', icon: 'pi pi-fw pi-image', routerLink: ['/app/uikit/media'] },
+          { label: 'Menu', icon: 'pi pi-fw pi-bars', routerLink: ['/app/uikit/menu'], routerLinkActiveOptions: { paths: 'subset', queryParams: 'ignored', matrixParams: 'ignored', fragment: 'ignored' } },
+          { label: 'Message', icon: 'pi pi-fw pi-comment', routerLink: ['/app/uikit/message'] },
+          { label: 'File', icon: 'pi pi-fw pi-file', routerLink: ['/app/uikit/file'] },
+          { label: 'Chart', icon: 'pi pi-fw pi-chart-bar', routerLink: ['/app/uikit/charts'] },
+          { label: 'Misc', icon: 'pi pi-fw pi-circle', routerLink: ['/app/uikit/misc'] }
         ],
         visible: !environment.production
       },
       {
         label: 'Prime Blocks',
         items: [
-          { label: 'Free Blocks', icon: 'pi pi-fw pi-eye', routerLink: ['/blocks'], badge: 'NEW' },
+          { label: 'Free Blocks', icon: 'pi pi-fw pi-eye', routerLink: ['/app/blocks'], badge: 'NEW' },
           { label: 'All Blocks', icon: 'pi pi-fw pi-globe', url: ['https://www.primefaces.org/primeblocks-ng'], target: '_blank' },
         ],
         visible: !environment.production
@@ -71,7 +78,7 @@ export class AppMenuComponent implements OnInit {
       {
         label: 'Utilities',
         items: [
-          { label: 'PrimeIcons', icon: 'pi pi-fw pi-prime', routerLink: ['/utilities/icons'] },
+          { label: 'PrimeIcons', icon: 'pi pi-fw pi-prime', routerLink: ['/app/utilities/icons'] },
           { label: 'PrimeFlex', icon: 'pi pi-fw pi-desktop', url: ['https://www.primefaces.org/primeflex/'], target: '_blank' },
         ],
         visible: !environment.production
@@ -83,7 +90,7 @@ export class AppMenuComponent implements OnInit {
           {
             label: 'Landing',
             icon: 'pi pi-fw pi-globe',
-            routerLink: ['/landing']
+            routerLink: ['/app/landing']
           },
           {
             label: 'Auth',
@@ -92,39 +99,39 @@ export class AppMenuComponent implements OnInit {
               {
                 label: 'Login',
                 icon: 'pi pi-fw pi-sign-in',
-                routerLink: ['/auth/demo/login']
+                routerLink: ['/app/auth/demo/login']
               },
               {
                 label: 'Error',
                 icon: 'pi pi-fw pi-times-circle',
-                routerLink: ['/auth/demo/error']
+                routerLink: ['/app/auth/demo/error']
               },
               {
                 label: 'Access Denied',
                 icon: 'pi pi-fw pi-lock',
-                routerLink: ['/auth/demo/access']
+                routerLink: ['/app/auth/demo/access']
               }
             ]
           },
           {
             label: 'Crud',
             icon: 'pi pi-fw pi-pencil',
-            routerLink: ['/pages/crud']
+            routerLink: ['/app/pages/crud']
           },
           {
             label: 'Timeline',
             icon: 'pi pi-fw pi-calendar',
-            routerLink: ['/pages/timeline']
+            routerLink: ['/app/pages/timeline']
           },
           {
             label: 'Not Found',
             icon: 'pi pi-fw pi-exclamation-circle',
-            routerLink: ['/notfound']
+            routerLink: ['/app/notfound']
           },
           {
             label: 'Empty',
             icon: 'pi pi-fw pi-circle-off',
-            routerLink: ['/pages/empty']
+            routerLink: ['/app/pages/empty']
           },
         ],
         visible: !environment.production
@@ -176,7 +183,7 @@ export class AppMenuComponent implements OnInit {
         label: 'Get Started',
         items: [
           {
-            label: 'Documentation', icon: 'pi pi-fw pi-question', routerLink: ['/documentation']
+            label: 'Documentation', icon: 'pi pi-fw pi-question', routerLink: ['/app/documentation']
           },
           {
             label: 'View Source', icon: 'pi pi-fw pi-search', url: ['https://github.com/primefaces/sakai-ng'], target: '_blank'

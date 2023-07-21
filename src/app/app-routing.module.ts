@@ -6,12 +6,12 @@ import { environment } from '@environments/environment';
 
 let routesDemo: Routes = [
   {
-    path: 'auth/demo',
+    path: 'app/auth/demo',
     loadChildren: () =>
       import('./demo/components/auth/auth.module').then((m) => m.AuthModule),
   },
   {
-    path: 'landing',
+    path: 'app/landing',
     loadChildren: () =>
       import('./demo/components/landing/landing.module').then(
         (m) => m.LandingModule
@@ -21,7 +21,7 @@ let routesDemo: Routes = [
 
 let routesDemoLayout: Routes = [
   {
-    path: '',
+    path: 'dashboard',
     loadChildren: () =>
       import('./demo/components/dashboard/dashboard.module').then(
         (m) => m.DashboardModule
@@ -72,6 +72,11 @@ if (environment.production) {
 const routes: Routes = [
   {
     path: '',
+    redirectTo: 'auth/login',
+    pathMatch: 'full'
+  },
+  {
+    path: 'app',
     component: AppLayoutComponent,
     children: [
       {

@@ -4,6 +4,8 @@ import { LayoutService } from '@app/layout/service/app.layout.service';
 import { AuthService } from '@app/services/auth/auth.service';
 import { UtilsService } from '@app/services/utils/utils.service';
 import { RecuperarContrasenaComponent } from '../../components/recuperar-contrasena/recuperar-contrasena.component';
+import { finalize } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -18,11 +20,12 @@ export class LoginComponent {
   constructor(
     public layoutService: LayoutService,
     private utilsService: UtilsService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {
     this.formLogin = new FormGroup({
-      usuario: new FormControl<string|null>('', Validators.compose([Validators.required])),
-      password: new FormControl<string|null>('', Validators.compose([Validators.required])),
+      usuario: new FormControl<string|null>('MUNDOBQTO', Validators.compose([Validators.required])),
+      password: new FormControl<string|null>('MUNDOBQTO', Validators.compose([Validators.required])),
       recuerdame: new FormControl<boolean>(false)
     });
   }
@@ -35,14 +38,23 @@ export class LoginComponent {
     }
 
     this.showError = false;
-
     this.loading = true;
 
-    const { usuario, password, recuerdame } = this.formLogin.getRawValue();
+    const { usuario, password } = this.formLogin.getRawValue();
 
-    console.log(usuario, password, recuerdame);
-
-    this.loading = true;
+    this.authService.login(usuario, password)
+      .pipe(
+        finalize(() => this.loading = false)
+      )
+      .subscribe({
+        next: (response) => {
+          console.log(response);
+          this.router.navigate(['/app/monedas']);
+        },
+        error: (error) => {
+          console.error(error);
+        }
+    });
 
     //this.authService.login(usuario, password, recuerdame);
   }

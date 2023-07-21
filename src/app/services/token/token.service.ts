@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import jwt_decode, { JwtPayload } from 'jwt-decode';
 import { getCookie, removeCookie, setCookie } from 'typescript-cookie';
 
-type nameToken = 'token' | 'refreshToken';
+type nameToken = 'accessToken' | 'refreshToken';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ export class TokenService {
   constructor() { }
 
   saveToken(name: nameToken, value: string): void {
-    setCookie(name, value, { expires: 365, path: '/' });
+    setCookie(name, value, { expires: 365, path: '/', sameSite: 'lax' });
   }
 
   getToken(name: nameToken): string | undefined {
@@ -19,7 +19,7 @@ export class TokenService {
   }
 
   removeToken(name: nameToken): void {
-    removeCookie(name);
+    removeCookie(name, {path: '/'});
   }
 
   isValidToken(name: nameToken): boolean {

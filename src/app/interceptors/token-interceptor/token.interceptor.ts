@@ -33,7 +33,7 @@ export class TokenInterceptor implements HttpInterceptor {
   }
 
   private addToken(request: HttpRequest<unknown>, next: HttpHandler) {
-    const accessToken = this.tokenService.getToken('token');
+    const accessToken = this.tokenService.getToken('accessToken');
 
     if (accessToken) {
       const authRequest = request.clone({
