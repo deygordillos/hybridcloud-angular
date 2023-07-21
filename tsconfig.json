@@ -25,6 +25,9 @@
       "@environments/*": [
         "src/environments/*"
       ],
+      "@guards/*": [
+        "src/app/guards/*"
+      ],
       "@interceptors/*": [
         "src/app/interceptors/*"
       ],

@@ -3,6 +3,8 @@ import { NgModule } from '@angular/core';
 import { NotfoundComponent } from './demo/components/notfound/notfound.component';
 import { AppLayoutComponent } from './layout/app.layout.component';
 import { environment } from '@environments/environment';
+import { RedirectGuard } from '@guards/redirect/redirect.guard';
+import { AuthGuard } from './guards/auth/auth.guard';
 
 let routesDemo: Routes = [];
 let routesDemoLayout: Routes = [];
@@ -38,6 +40,7 @@ const routes: Routes = [
   {
     path: 'app',
     component: AppLayoutComponent,
+    canActivate: [ AuthGuard ],
     children: [
       {
         path: 'formas-pago',
@@ -90,7 +93,8 @@ const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () => import('./modules/auth/auth.module')
-      .then(m => m.AuthModule)
+      .then(m => m.AuthModule),
+    canActivate: [ RedirectGuard ],
   },
   ...routesDemo,
   { path: 'notfound', component: NotfoundComponent },
