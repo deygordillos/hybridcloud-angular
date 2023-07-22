@@ -1,9 +1,11 @@
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap, map, BehaviorSubject} from 'rxjs';
+import { Observable, tap, map, BehaviorSubject } from 'rxjs';
 import { TokenService } from '@services/token/token.service';
 import { environment } from '@environments/environment';
 import { User } from '@app/models/user.model';
+import { LoginResponse } from '@app/models/loginResponse.model';
+import { checkToken } from '@app/interceptors/token-interceptor/token.interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -17,35 +19,31 @@ export class AuthService {
     private tokenService: TokenService
   ) { }
 
-  login(usuario: string, password: string/* , recuerdame: boolean */) : Observable<User> {
+  login(usuario: string, password: string/* , recuerdame: boolean */) : Observable<LoginResponse> {
     const auth = btoa(`${usuario.trim()}:${password.trim()}`);
 
     const headers = new HttpHeaders({
       Authorization: `Basic ${auth}`,
     });
 
-    return this.httpClient.post<User>(`${this.url}/auth/login`, null, { headers, observe: 'response' })
+    return this.httpClient.post<LoginResponse>(`${this.url}/auth/login`, null, { headers })
       .pipe(
-        tap((response: HttpResponse<unknown>) => {
-          const headers: HttpHeaders = response.headers;
-          const accessToken: string | null = headers.get('Authorization');
-          const setCookieHeader: string | null = headers.get('set-cookie');
-          const refreshToken: string | null = this.extractCookieValue(setCookieHeader, 'refreshToken');
-          console.log(setCookieHeader);
+        tap(response => {
+          const { accessToken, refreshToken, data } = response;
 
-          if (accessToken) {
-            this.tokenService.saveToken('accessToken', accessToken);
-            //this.tokenService.saveToken('refreshToken', refreshToken);
-          }
+          if (accessToken && refreshToken)
+            this.saveLogin(accessToken, refreshToken, data);
         }),
         map(response => {
-          const data = response.body as User;
-
-          this.saveUser(data);
-
-          return data;
+          return response;
         })
       );
+  }
+
+  saveLogin(accessToken: string, refreshToken: string, user: User): void {
+    this.tokenService.saveToken('accessToken', accessToken);
+    this.tokenService.saveToken('refreshToken', refreshToken);
+    this.saveUser(user);
   }
 
   saveUser(user: User | null): void {
@@ -61,32 +59,20 @@ export class AuthService {
     return JSON.parse(user);
   }
 
-  private extractCookieValue(cookieHeader: string | null, cookieName: string): string | null {
-    if (!cookieHeader) {
-      return null;
-    }
-
-    const cookiePrefix = `${cookieName}=`;
-    const cookieList = cookieHeader.split(';');
-
-    for (const cookie of cookieList) {
-      const trimmedCookie = cookie.trim();
-      if (trimmedCookie.startsWith(cookiePrefix)) {
-        return trimmedCookie.substring(cookiePrefix.length);
-      }
-    }
-
-    return null;
-  }
-
-  refreshToken(refreshToken: string): Observable<any> {
-    return this.httpClient.post<any>('', { refreshToken })
+  refreshToken(refreshToken: string): Observable<LoginResponse> {
+    return this.httpClient.post<LoginResponse>(`${this.url}/auth/refresh`, { refreshToken })
       .pipe(
         tap(response => {
-          this.tokenService.saveToken('accessToken', response.token);
-          this.tokenService.saveToken('refreshToken', response.refreshToken);
+          const { accessToken, refreshToken, data } = response;
+
+          if (accessToken && refreshToken)
+            this.saveLogin(accessToken, refreshToken, data);
         })
       );
+  }
+
+  testToken() {
+    return this.httpClient.post<any>(`${this.url}/auth/test`, null, { context: checkToken() });
   }
 
   logout(): void {

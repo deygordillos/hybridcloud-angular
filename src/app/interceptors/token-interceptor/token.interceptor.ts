@@ -5,11 +5,14 @@ import {
   HttpEvent,
   HttpInterceptor,
   HttpContextToken,
-  HttpContext
+  HttpContext,
+  HttpErrorResponse
 } from '@angular/common/http';
-import { Observable, switchMap } from 'rxjs';
+import { Observable, catchError, lastValueFrom, switchMap, throwError } from 'rxjs';
 import { TokenService } from '@app/services/token/token.service';
 import { AuthService } from '@app/services/auth/auth.service';
+import { Router } from '@angular/router';
+import { UtilsService } from '@app/services/utils/utils.service';
 
 const CHECK_TOKEN = new HttpContextToken<boolean>(() => false);
 
@@ -19,46 +22,99 @@ export function checkToken() {
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
+  showMessage = true;
+
   constructor(
     private tokenService: TokenService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router,
+    private utilsService: UtilsService
   ) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    if (request.context.get(CHECK_TOKEN)) {
-      return this.addToken(request, next);
-    }
+    if (request.context.get(CHECK_TOKEN))
+      request = this.addToken(request);
 
-    return next.handle(request);
+    this.showMessage = true;
+
+    return next.handle(request).pipe(
+      catchError(error => {
+        if (error instanceof HttpErrorResponse) {
+          if (error.status === 0) {
+            this.utilsService.openToast({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'El servicio no responde'
+            });
+
+            return throwError(() => console.log('Service not found'));
+          }
+
+          const refreshToken = this.tokenService.getToken('refreshToken');
+          const isValidRefreshToken = this.tokenService.isValidToken('refreshToken');
+
+          if ((error.status === 400 || error.status === 401) && request.url.endsWith('auth/refresh')) { // Error al intentar obtener el token
+            this.redirectLogout();
+            return throwError(() => console.log('Session expired'));
+          }
+
+          if ((error.status === 400 || error.status === 401) && refreshToken && isValidRefreshToken) {
+            return this.authService.refreshToken(refreshToken).pipe(
+              switchMap(() => {
+                if (request.context.get(CHECK_TOKEN))
+                  request = this.addToken(request);
+
+                return next.handle(request);
+              }),
+              catchError((error) => {
+                if (!request.url.endsWith('auth/refresh'))
+                  this.redirectLogout();
+
+                return throwError(() => console.log('Session expired'));
+              })
+            );
+          }
+        }
+
+        return throwError(() => console.log(error));
+      })
+    );
   }
 
-  private addToken(request: HttpRequest<unknown>, next: HttpHandler) {
+  private addToken(request: HttpRequest<any>): HttpRequest<any> {
     const accessToken = this.tokenService.getToken('accessToken');
+    const isValidAccesToken = this.tokenService.isValidToken('accessToken');
 
-    if (accessToken) {
-      const authRequest = request.clone({
-        headers: request.headers.set('Authorization', `Bearer ${accessToken}`)
+    if (accessToken && isValidAccesToken) {
+      request = request.clone({
+        setHeaders: {
+          Authorization: `Bearer ${accessToken}`
+        }
       });
 
-      return next.handle(authRequest);
-    } else {
-      this.updateAccessTokenAndRefreshToken(request, next);
+      return request;
     }
 
-    return next.handle(request);
+    return request;
   }
 
-  private updateAccessTokenAndRefreshToken(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const refreshToken = this.tokenService.getToken('refreshToken');
-    const isValidRefreshToken = this.tokenService.isValidToken('refreshToken');
+  redirectLogout(): void {
+    this.authService.logout();
+    const currentPath = this.router.url;
+    this.router.navigate(['/auth/login'], {
+      queryParams: {
+        redirect: encodeURIComponent(currentPath)
+      }
+    });
 
-    if (refreshToken && isValidRefreshToken) {
-      return this.authService.refreshToken(refreshToken)
-        .pipe(
-          switchMap(() => this.addToken(request, next))
-        );
+    if (this.showMessage) {
+      this.utilsService.openToast({
+        severity: 'error',
+        summary: 'Expiró la sesión',
+        detail: 'Vuelva a iniciar sesión para acceder al sistema'
+      });
+
+      this.showMessage = false;
     }
-
-    return next.handle(request);
   }
 }
