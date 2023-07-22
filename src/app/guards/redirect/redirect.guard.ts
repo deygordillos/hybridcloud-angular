@@ -14,8 +14,7 @@ export class RedirectGuard {
   ) {}
 
   canActivate(): boolean {
-    //const isValidRefreshToken = this.tokenService.isValidToken('refreshToken');
-    const isValidRefreshToken = this.authService.getUser();
+    const isValidRefreshToken = this.tokenService.isValidToken('refreshToken');
 
     if (isValidRefreshToken) {
       this.router.navigate(['/app/monedas']);

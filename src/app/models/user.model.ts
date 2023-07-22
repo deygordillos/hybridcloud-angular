@@ -3,5 +3,4 @@ export interface User {
   username: string;
   sucursal: string;
   empresa: string;
-  expireIn: string;
 }

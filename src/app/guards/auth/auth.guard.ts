@@ -14,12 +14,10 @@ export class AuthGuard {
   ) {}
 
   canActivate(): boolean {
-    //const isValidRefreshToken = this.tokenService.isValidToken('refreshToken');
-    const isValidRefreshToken = this.authService.getUser();
-
-    console.log(isValidRefreshToken)
+    const isValidRefreshToken = this.tokenService.isValidToken('refreshToken');
 
     if (!isValidRefreshToken) {
+      this.authService.logout();
       this.router.navigate(['/auth/login']);
 
       return false;

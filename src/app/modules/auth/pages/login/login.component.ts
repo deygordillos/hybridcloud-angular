@@ -5,7 +5,8 @@ import { AuthService } from '@app/services/auth/auth.service';
 import { UtilsService } from '@app/services/utils/utils.service';
 import { RecuperarContrasenaComponent } from '../../components/recuperar-contrasena/recuperar-contrasena.component';
 import { finalize } from 'rxjs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { LoginResponse } from '@app/models/loginResponse.model';
 
 @Component({
   selector: 'app-login',
@@ -21,11 +22,12 @@ export class LoginComponent {
     public layoutService: LayoutService,
     private utilsService: UtilsService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.formLogin = new FormGroup({
-      usuario: new FormControl<string|null>('MUNDOBQTO', Validators.compose([Validators.required])),
-      password: new FormControl<string|null>('MUNDOBQTO', Validators.compose([Validators.required])),
+      usuario: new FormControl<string|null>('', Validators.compose([Validators.required])),
+      password: new FormControl<string|null>('', Validators.compose([Validators.required])),
       recuerdame: new FormControl<boolean>(false)
     });
   }
@@ -48,15 +50,17 @@ export class LoginComponent {
       )
       .subscribe({
         next: (response) => {
-          console.log(response);
-          this.router.navigate(['/app/monedas']);
+          if (response.data) {
+            const redirect = this.route.snapshot.queryParams['redirect'] || '';
+            const urlRedirect = redirect ? decodeURIComponent(redirect) : '/app/monedas';
+
+            this.router.navigateByUrl(urlRedirect);
+          }
         },
         error: (error) => {
           console.error(error);
         }
     });
-
-    //this.authService.login(usuario, password, recuerdame);
   }
 
   async openModalConfirm(): Promise<void> {
