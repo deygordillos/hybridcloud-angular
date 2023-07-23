@@ -8,7 +8,7 @@ import {
   HttpContext,
   HttpErrorResponse
 } from '@angular/common/http';
-import { Observable, catchError, lastValueFrom, switchMap, throwError } from 'rxjs';
+import { Observable, catchError, finalize, lastValueFrom, switchMap, takeWhile, throwError } from 'rxjs';
 import { TokenService } from '@app/services/token/token.service';
 import { AuthService } from '@app/services/auth/auth.service';
 import { Router } from '@angular/router';
@@ -22,8 +22,6 @@ export function checkToken() {
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-  showMessage = true;
-
   constructor(
     private tokenService: TokenService,
     private authService: AuthService,
@@ -34,8 +32,6 @@ export class TokenInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     if (request.context.get(CHECK_TOKEN))
       request = this.addToken(request);
-
-    this.showMessage = true;
 
     return next.handle(request).pipe(
       catchError(error => {
@@ -50,13 +46,13 @@ export class TokenInterceptor implements HttpInterceptor {
             return throwError(() => console.log('Service not found'));
           }
 
-          const refreshToken = this.tokenService.getToken('refreshToken');
-          const isValidRefreshToken = this.tokenService.isValidToken('refreshToken');
-
           if ((error.status === 400 || error.status === 401) && request.url.endsWith('auth/refresh')) { // Error al intentar obtener el token
             this.redirectLogout();
-            return throwError(() => console.log('Session expired'));
+            return throwError(() => {});
           }
+
+          const refreshToken = this.tokenService.getToken('refreshToken');
+          const isValidRefreshToken = this.tokenService.isValidToken('refreshToken');
 
           if ((error.status === 400 || error.status === 401) && refreshToken && isValidRefreshToken) {
             return this.authService.refreshToken(refreshToken).pipe(
@@ -66,7 +62,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
                 return next.handle(request);
               }),
-              catchError((error) => {
+              catchError(() => {
                 if (!request.url.endsWith('auth/refresh'))
                   this.redirectLogout();
 
@@ -76,7 +72,7 @@ export class TokenInterceptor implements HttpInterceptor {
           }
         }
 
-        return throwError(() => console.log(error));
+        return throwError(() => console.log(error.message));
       })
     );
   }
@@ -107,14 +103,10 @@ export class TokenInterceptor implements HttpInterceptor {
       }
     });
 
-    if (this.showMessage) {
-      this.utilsService.openToast({
-        severity: 'error',
-        summary: 'Expiró la sesión',
-        detail: 'Vuelva a iniciar sesión para acceder al sistema'
-      });
-
-      this.showMessage = false;
-    }
+    this.utilsService.openToast({
+      severity: 'error',
+      summary: 'Expiró la sesión',
+      detail: 'Vuelva a iniciar sesión para acceder al sistema'
+    });
   }
 }

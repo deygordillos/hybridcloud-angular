@@ -19,7 +19,7 @@ export class TokenService {
   }
 
   removeToken(name: nameToken): void {
-    removeCookie(name, {path: '/'});
+    removeCookie(name, { path: '/', sameSite: 'lax' });
   }
 
   isValidToken(name: nameToken): boolean {

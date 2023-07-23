@@ -16,9 +16,9 @@ export class UtilsService {
   ) { }
 
   openToast(message: Message): void {
-    const { severity, summary, detail } = message;
+    const { severity, summary, detail, life } = message;
 
-    this.messageService.add({ key: 'tst', severity, summary, detail });
+    this.messageService.add({ key: 'tst', severity, summary, detail, life: life ?? 5000 });
   }
 
   openModalConfirm(dataModal: ModalConfirm): Promise<boolean> {

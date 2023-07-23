@@ -58,7 +58,11 @@ export class LoginComponent {
           }
         },
         error: (error) => {
-          console.error(error);
+          this.utilsService.openToast({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Usuario/Contraseña inválido'
+          });
         }
     });
   }
