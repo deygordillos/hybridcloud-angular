@@ -26,7 +26,7 @@ export class AuthService {
       Authorization: `Basic ${auth}`,
     });
 
-    return this.httpClient.post<LoginResponse>(`${this.url}/auth/login`, null, { headers })
+    return this.httpClient.post<LoginResponse>(`${this.url}/v1/auth/login`, null, { headers })
       .pipe(
         tap(response => {
           const { accessToken, refreshToken, data } = response;
@@ -60,7 +60,7 @@ export class AuthService {
   }
 
   refreshToken(refreshToken: string): Observable<LoginResponse> {
-    return this.httpClient.post<LoginResponse>(`${this.url}/auth/refresh`, { refreshToken })
+    return this.httpClient.post<LoginResponse>(`${this.url}/v1/auth/refresh`, { refreshToken })
       .pipe(
         tap(response => {
           const { accessToken, refreshToken, data } = response;
@@ -72,7 +72,7 @@ export class AuthService {
   }
 
   testToken() {
-    return this.httpClient.post<any>(`${this.url}/auth/test`, null, { context: checkToken() });
+    return this.httpClient.post<any>(`${this.url}/v1/auth/test`, null, { context: checkToken() });
   }
 
   logout(): void {
