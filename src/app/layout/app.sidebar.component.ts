@@ -6,8 +6,6 @@ import { LayoutService } from './service/app.layout.service';
   templateUrl: './app.sidebar.component.html',
 })
 export class AppSidebarComponent {
-  funcion() {}
-
   constructor(
     public layoutService: LayoutService,
     public el: ElementRef
