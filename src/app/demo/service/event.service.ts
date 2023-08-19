@@ -4,14 +4,12 @@ import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class EventService {
-
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getEvents() {
     const request = this.http.get<any>('assets/demo/data/scheduleevents.json');
     const response = lastValueFrom(request);
 
-    return response.then(res => res.data as any[])
-      .then(data => data);
+    return response.then(res => res.data as any[]).then(data => data);
   }
 }

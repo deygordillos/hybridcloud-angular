@@ -5,12 +5,12 @@ import { FamiliaInventarioComponent } from './pages/familia-inventario/familia-i
 const routes: Routes = [
   {
     path: '',
-    component: FamiliaInventarioComponent
-  }
+    component: FamiliaInventarioComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class FamiliaInventarioRoutingModule { }
+export class FamiliaInventarioRoutingModule {}

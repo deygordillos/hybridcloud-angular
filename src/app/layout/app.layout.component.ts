@@ -36,7 +36,7 @@ export class AppLayoutComponent implements OnDestroy {
           this.menuOutsideClickListener = this.renderer.listen(
             'document',
             'click',
-            (event) => {
+            event => {
               const isOutsideClicked = !(
                 this.appSidebar.el.nativeElement.isSameNode(event.target) ||
                 this.appSidebar.el.nativeElement.contains(event.target) ||
@@ -57,7 +57,7 @@ export class AppLayoutComponent implements OnDestroy {
           this.profileMenuOutsideClickListener = this.renderer.listen(
             'document',
             'click',
-            (event) => {
+            event => {
               const isOutsideClicked = !(
                 this.appTopbar.menu.nativeElement.isSameNode(event.target) ||
                 this.appTopbar.menu.nativeElement.contains(event.target) ||
@@ -82,7 +82,7 @@ export class AppLayoutComponent implements OnDestroy {
       });
 
     this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
+      .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
         this.hideMenu();
         this.hideProfileMenu();

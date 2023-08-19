@@ -8,7 +8,7 @@ import { LoginResponse } from '@app/models/loginResponse.model';
 import { checkToken } from '@app/interceptors/token-interceptor/token.interceptor';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   $user = new BehaviorSubject<User | null>(null);
@@ -17,16 +17,20 @@ export class AuthService {
   constructor(
     private httpClient: HttpClient,
     private tokenService: TokenService
-  ) { }
+  ) {}
 
-  login(usuario: string, password: string/* , recuerdame: boolean */) : Observable<LoginResponse> {
+  login(
+    usuario: string,
+    password: string /* , recuerdame: boolean */
+  ): Observable<LoginResponse> {
     const auth = btoa(`${usuario.trim()}:${password.trim()}`);
 
     const headers = new HttpHeaders({
       Authorization: `Basic ${auth}`,
     });
 
-    return this.httpClient.post<LoginResponse>(`${this.url}/v1/auth/login`, null, { headers })
+    return this.httpClient
+      .post<LoginResponse>(`${this.url}/v1/auth/login`, null, { headers })
       .pipe(
         tap(response => {
           const { accessToken, refreshToken, data } = response;
@@ -60,7 +64,8 @@ export class AuthService {
   }
 
   refreshToken(refreshToken: string): Observable<LoginResponse> {
-    return this.httpClient.post<LoginResponse>(`${this.url}/v1/auth/refresh`, { refreshToken })
+    return this.httpClient
+      .post<LoginResponse>(`${this.url}/v1/auth/refresh`, { refreshToken })
       .pipe(
         tap(response => {
           const { accessToken, refreshToken, data } = response;
@@ -72,7 +77,9 @@ export class AuthService {
   }
 
   testToken() {
-    return this.httpClient.post<any>(`${this.url}/v1/auth/test`, null, { context: checkToken() });
+    return this.httpClient.post<any>(`${this.url}/v1/auth/test`, null, {
+      context: checkToken(),
+    });
   }
 
   logout(): void {

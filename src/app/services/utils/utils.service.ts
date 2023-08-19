@@ -5,20 +5,25 @@ import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UtilsService {
-
   constructor(
     private confirmationService: ConfirmationService,
     private dialogService: DialogService,
     private messageService: MessageService
-  ) { }
+  ) {}
 
   openToast(message: Message): void {
     const { severity, summary, detail, life } = message;
 
-    this.messageService.add({ key: 'tst', severity, summary, detail, life: life ?? 5000 });
+    this.messageService.add({
+      key: 'tst',
+      severity,
+      summary,
+      detail,
+      life: life ?? 5000,
+    });
   }
 
   openModalConfirm(dataModal: ModalConfirm): Promise<boolean> {
@@ -36,12 +41,15 @@ export class UtilsService {
         },
         reject: () => {
           reject(false);
-        }
-      })
+        },
+      });
     });
   }
 
-  async openModal(component: Type<any> , config: DynamicDialogConfig): Promise<any> {
+  async openModal(
+    component: Type<any>,
+    config: DynamicDialogConfig
+  ): Promise<any> {
     return new Promise((resolve, reject) => {
       const dialogRef = this.dialogService.open(component, config);
 

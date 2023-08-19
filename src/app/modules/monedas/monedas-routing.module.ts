@@ -5,12 +5,12 @@ import { MonedasComponent } from './pages/monedas/monedas.component';
 const routes: Routes = [
   {
     path: '',
-    component: MonedasComponent
-  }
+    component: MonedasComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class MonedasRoutingModule { }
+export class MonedasRoutingModule {}

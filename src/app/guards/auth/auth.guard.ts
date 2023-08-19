@@ -5,7 +5,7 @@ import { TokenService } from '@app/services/token/token.service';
 import { UtilsService } from '@app/services/utils/utils.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthGuard {
   constructor(
@@ -25,7 +25,7 @@ export class AuthGuard {
       this.utilsService.openToast({
         severity: 'error',
         summary: 'Expiró la sesión',
-        detail: 'Vuelva a iniciar sesión para acceder al sistema'
+        detail: 'Vuelva a iniciar sesión para acceder al sistema',
       });
 
       return false;
@@ -33,5 +33,4 @@ export class AuthGuard {
 
     return true;
   }
-
 }

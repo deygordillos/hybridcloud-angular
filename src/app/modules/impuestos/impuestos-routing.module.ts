@@ -5,12 +5,12 @@ import { ImpuestosComponent } from './pages/impuestos/impuestos.component';
 const routes: Routes = [
   {
     path: '',
-    component: ImpuestosComponent
-  }
+    component: ImpuestosComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class ImpuestosRoutingModule { }
+export class ImpuestosRoutingModule {}

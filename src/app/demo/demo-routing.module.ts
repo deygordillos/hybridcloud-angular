@@ -6,48 +6,44 @@ const routes: Routes = [
     path: 'dashboard',
     loadChildren: () =>
       import('./components/dashboard/dashboard.module').then(
-        (m) => m.DashboardModule
+        m => m.DashboardModule
       ),
   },
   {
     path: 'uikit',
     loadChildren: () =>
-      import('./components/uikit/uikit.module').then(
-        (m) => m.UIkitModule
-      ),
+      import('./components/uikit/uikit.module').then(m => m.UIkitModule),
   },
   {
     path: 'utilities',
     loadChildren: () =>
       import('./components/utilities/utilities.module').then(
-        (m) => m.UtilitiesModule
+        m => m.UtilitiesModule
       ),
   },
   {
     path: 'documentation',
     loadChildren: () =>
       import('./components/documentation/documentation.module').then(
-        (m) => m.DocumentationModule
+        m => m.DocumentationModule
       ),
   },
   {
     path: 'blocks',
     loadChildren: () =>
       import('./components/primeblocks/primeblocks.module').then(
-        (m) => m.PrimeBlocksModule
+        m => m.PrimeBlocksModule
       ),
   },
   {
     path: 'pages',
     loadChildren: () =>
-      import('./components/pages/pages.module').then(
-        (m) => m.PagesModule
-      ),
-  }
+      import('./components/pages/pages.module').then(m => m.PagesModule),
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class DemoRoutingModule { }
+export class DemoRoutingModule {}

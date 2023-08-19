@@ -5,10 +5,10 @@ import { getCookie, removeCookie, setCookie } from 'typescript-cookie';
 type nameToken = 'accessToken' | 'refreshToken';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TokenService {
-  constructor() { }
+  constructor() {}
 
   saveToken(name: nameToken, value: string): void {
     setCookie(name, value, { expires: 365, path: '/', sameSite: 'lax' });

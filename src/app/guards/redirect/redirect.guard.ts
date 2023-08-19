@@ -4,7 +4,7 @@ import { AuthService } from '@app/services/auth/auth.service';
 import { TokenService } from '@app/services/token/token.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RedirectGuard {
   constructor(

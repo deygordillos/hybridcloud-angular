@@ -5,12 +5,12 @@ import { ProductosServiciosInventarioComponent } from './pages/productos-servici
 const routes: Routes = [
   {
     path: '',
-    component: ProductosServiciosInventarioComponent
-  }
+    component: ProductosServiciosInventarioComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class ProductosServiciosInventarioRoutingModule { }
+export class ProductosServiciosInventarioRoutingModule {}

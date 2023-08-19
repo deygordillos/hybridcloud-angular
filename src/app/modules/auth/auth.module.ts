@@ -14,10 +14,7 @@ import { KeyFilterModule } from 'primeng/keyfilter';
 import { RecuperarContrasenaComponent } from './components/recuperar-contrasena/recuperar-contrasena.component';
 
 @NgModule({
-  declarations: [
-    LoginComponent,
-    RecuperarContrasenaComponent,
-  ],
+  declarations: [LoginComponent, RecuperarContrasenaComponent],
   imports: [
     CommonModule,
     AuthRoutingModule,
@@ -29,7 +26,7 @@ import { RecuperarContrasenaComponent } from './components/recuperar-contrasena/
     PasswordModule,
     MessagesModule,
     MessageModule,
-    KeyFilterModule
-  ]
+    KeyFilterModule,
+  ],
 })
-export class AuthModule { }
+export class AuthModule {}

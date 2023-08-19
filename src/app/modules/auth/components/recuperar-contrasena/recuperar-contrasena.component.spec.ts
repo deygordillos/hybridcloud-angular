@@ -8,9 +8,8 @@ describe('RecuperarContrasenaComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ RecuperarContrasenaComponent ]
-    })
-    .compileComponents();
+      declarations: [RecuperarContrasenaComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(RecuperarContrasenaComponent);
     component = fixture.componentInstance;

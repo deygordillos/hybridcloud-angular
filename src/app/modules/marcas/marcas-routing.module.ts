@@ -5,12 +5,12 @@ import { MarcasComponent } from './pages/marcas/marcas.component';
 const routes: Routes = [
   {
     path: '',
-    component: MarcasComponent
-  }
+    component: MarcasComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class MarcasRoutingModule { }
+export class MarcasRoutingModule {}

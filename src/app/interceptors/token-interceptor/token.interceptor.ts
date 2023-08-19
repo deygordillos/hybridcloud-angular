@@ -6,9 +6,17 @@ import {
   HttpInterceptor,
   HttpContextToken,
   HttpContext,
-  HttpErrorResponse
+  HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable, catchError, finalize, lastValueFrom, switchMap, takeWhile, throwError } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  finalize,
+  lastValueFrom,
+  switchMap,
+  takeWhile,
+  throwError,
+} from 'rxjs';
 import { TokenService } from '@app/services/token/token.service';
 import { AuthService } from '@app/services/auth/auth.service';
 import { Router } from '@angular/router';
@@ -17,7 +25,7 @@ import { UtilsService } from '@app/services/utils/utils.service';
 const CHECK_TOKEN = new HttpContextToken<boolean>(() => false);
 
 export function checkToken() {
-  return new  HttpContext().set(CHECK_TOKEN, true);
+  return new HttpContext().set(CHECK_TOKEN, true);
 }
 
 @Injectable()
@@ -29,9 +37,11 @@ export class TokenInterceptor implements HttpInterceptor {
     private utilsService: UtilsService
   ) {}
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    if (request.context.get(CHECK_TOKEN))
-      request = this.addToken(request);
+  intercept(
+    request: HttpRequest<unknown>,
+    next: HttpHandler
+  ): Observable<HttpEvent<unknown>> {
+    if (request.context.get(CHECK_TOKEN)) request = this.addToken(request);
 
     return next.handle(request).pipe(
       catchError(error => {
@@ -40,21 +50,30 @@ export class TokenInterceptor implements HttpInterceptor {
             this.utilsService.openToast({
               severity: 'error',
               summary: 'Error',
-              detail: 'El servicio no responde'
+              detail: 'El servicio no responde',
             });
 
             return throwError(() => console.log('Service not found'));
           }
 
-          if ((error.status === 400 || error.status === 401) && request.url.endsWith('auth/refresh')) { // Error al intentar obtener el token
+          if (
+            (error.status === 400 || error.status === 401) &&
+            request.url.endsWith('auth/refresh')
+          ) {
+            // Error al intentar obtener el token
             this.redirectLogout();
             return throwError(() => {});
           }
 
           const refreshToken = this.tokenService.getToken('refreshToken');
-          const isValidRefreshToken = this.tokenService.isValidToken('refreshToken');
+          const isValidRefreshToken =
+            this.tokenService.isValidToken('refreshToken');
 
-          if ((error.status === 400 || error.status === 401) && refreshToken && isValidRefreshToken) {
+          if (
+            (error.status === 400 || error.status === 401) &&
+            refreshToken &&
+            isValidRefreshToken
+          ) {
             return this.authService.refreshToken(refreshToken).pipe(
               switchMap(() => {
                 if (request.context.get(CHECK_TOKEN))
@@ -84,8 +103,8 @@ export class TokenInterceptor implements HttpInterceptor {
     if (accessToken && isValidAccesToken) {
       request = request.clone({
         setHeaders: {
-          Authorization: `Bearer ${accessToken}`
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
       return request;
@@ -99,14 +118,14 @@ export class TokenInterceptor implements HttpInterceptor {
     const currentPath = this.router.url;
     this.router.navigate(['/auth/login'], {
       queryParams: {
-        redirect: encodeURIComponent(currentPath)
-      }
+        redirect: encodeURIComponent(currentPath),
+      },
     });
 
     this.utilsService.openToast({
       severity: 'error',
       summary: 'Expiró la sesión',
-      detail: 'Vuelva a iniciar sesión para acceder al sistema'
+      detail: 'Vuelva a iniciar sesión para acceder al sistema',
     });
   }
 }

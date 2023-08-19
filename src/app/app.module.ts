@@ -1,5 +1,9 @@
 import { NgModule } from '@angular/core';
-import { HashLocationStrategy, LocationStrategy, PathLocationStrategy } from '@angular/common';
+import {
+  HashLocationStrategy,
+  LocationStrategy,
+  PathLocationStrategy,
+} from '@angular/common';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppLayoutModule } from './layout/app.layout.module';
@@ -20,20 +24,20 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NotfoundComponent
-  ],
+  declarations: [AppComponent, NotfoundComponent],
   imports: [
     AppRoutingModule,
     HttpClientModule,
     AppLayoutModule,
     DynamicDialogModule,
     ConfirmDialogModule,
-    ToastModule
+    ToastModule,
   ],
   providers: [
-    { provide: LocationStrategy, useClass: PathLocationStrategy  /* HashLocationStrategy */ },
+    {
+      provide: LocationStrategy,
+      useClass: PathLocationStrategy /* HashLocationStrategy */,
+    },
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     CountryService,
     CustomerService,
@@ -45,7 +49,7 @@ import { ToastModule } from 'primeng/toast';
 
     ConfirmationService,
     DialogService,
-    MessageService
+    MessageService,
   ],
   bootstrap: [AppComponent],
 })

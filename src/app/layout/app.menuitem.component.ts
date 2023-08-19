@@ -27,8 +27,7 @@ import { LayoutService } from './service/app.layout.service';
     <ng-container>
       <div
         *ngIf="root && item.visible !== false"
-        class="layout-menuitem-root-text"
-      >
+        class="layout-menuitem-root-text">
         {{ item.label }}
       </div>
       <a
@@ -38,14 +37,12 @@ import { LayoutService } from './service/app.layout.service';
         [ngClass]="item.class"
         [attr.target]="item.target"
         tabindex="0"
-        pRipple
-      >
+        pRipple>
         <i [ngClass]="item.icon" class="layout-menuitem-icon"></i>
         <span class="layout-menuitem-text">{{ item.label }}</span>
         <i
           class="pi pi-fw pi-angle-down layout-submenu-toggler"
-          *ngIf="item.items"
-        ></i>
+          *ngIf="item.items"></i>
       </a>
       <a
         *ngIf="item.routerLink && !item.items && item.visible !== false"
@@ -70,28 +67,24 @@ import { LayoutService } from './service/app.layout.service';
         [queryParams]="item.queryParams"
         [attr.target]="item.target"
         tabindex="0"
-        pRipple
-      >
+        pRipple>
         <i [ngClass]="item.icon" class="layout-menuitem-icon"></i>
         <span class="layout-menuitem-text">{{ item.label }}</span>
         <i
           class="pi pi-fw pi-angle-down layout-submenu-toggler"
-          *ngIf="item.items"
-        ></i>
+          *ngIf="item.items"></i>
       </a>
 
       <ul
         *ngIf="item.items && item.visible !== false"
-        [@children]="submenuAnimation"
-      >
+        [@children]="submenuAnimation">
         <ng-template ngFor let-child let-i="index" [ngForOf]="item.items">
           <li
             app-menuitem
             [item]="child"
             [index]="i"
             [parentKey]="key"
-            [class]="child.badgeClass"
-          ></li>
+            [class]="child.badgeClass"></li>
         </ng-template>
       </ul>
     </ng-container>
@@ -141,7 +134,7 @@ export class AppMenuitemComponent implements OnInit, OnDestroy {
     private menuService: MenuService
   ) {
     this.menuSourceSubscription = this.menuService.menuSource$.subscribe(
-      (value) => {
+      value => {
         Promise.resolve(null).then(() => {
           if (value.routeEvent) {
             this.active =
@@ -165,8 +158,8 @@ export class AppMenuitemComponent implements OnInit, OnDestroy {
     });
 
     this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((params) => {
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(params => {
         if (this.item.routerLink) {
           this.updateActiveStateFromRoute();
         }

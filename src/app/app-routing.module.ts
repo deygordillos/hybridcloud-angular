@@ -14,20 +14,22 @@ if (!environment.production) {
     {
       path: 'app/demo/auth',
       loadChildren: () =>
-        import('./demo/components/auth/auth.module').then((m) => m.AuthModule),
+        import('./demo/components/auth/auth.module').then(m => m.AuthModule),
     },
     {
       path: 'app/demo/landing',
       loadChildren: () =>
-        import('./demo/components/landing/landing.module').then((m) => m.LandingModule),
-    }
+        import('./demo/components/landing/landing.module').then(
+          m => m.LandingModule
+        ),
+    },
   ];
 
   routesDemoLayout = [
     {
       path: 'demo',
-      loadChildren: () => import('./demo/demo.module').then(m => m.DemoModule)
-    }
+      loadChildren: () => import('./demo/demo.module').then(m => m.DemoModule),
+    },
   ];
 }
 
@@ -35,73 +37,85 @@ const routes: Routes = [
   {
     path: '',
     redirectTo: 'auth/login',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'app',
     component: AppLayoutComponent,
-    canActivate: [ AuthGuard ],
+    canActivate: [AuthGuard],
     children: [
       {
         path: 'formas-pago',
-        loadChildren: () => import('./modules/formas-pago/formas-pago.module')
-          .then(m => m.FormasPagoModule)
+        loadChildren: () =>
+          import('./modules/formas-pago/formas-pago.module').then(
+            m => m.FormasPagoModule
+          ),
       },
       {
         path: 'monedas',
-        loadChildren: () => import('./modules/monedas/monedas.module')
-          .then(m => m.MonedasModule)
+        loadChildren: () =>
+          import('./modules/monedas/monedas.module').then(m => m.MonedasModule),
       },
       {
         path: 'marcas',
-        loadChildren: () => import('./modules/marcas/marcas.module')
-          .then(m => m.MarcasModule)
+        loadChildren: () =>
+          import('./modules/marcas/marcas.module').then(m => m.MarcasModule),
       },
       {
         path: 'impuestos',
-        loadChildren: () => import('./modules/impuestos/impuestos.module')
-          .then(m => m.ImpuestosModule)
+        loadChildren: () =>
+          import('./modules/impuestos/impuestos.module').then(
+            m => m.ImpuestosModule
+          ),
       },
       {
         path: 'cargos-descargos-ajustes',
-        loadChildren: () => import('./modules/cargos-descargos-ajustes/cargos-descargos-ajustes.module')
-          .then(m => m.CargosDescargosAjustesModule)
+        loadChildren: () =>
+          import(
+            './modules/cargos-descargos-ajustes/cargos-descargos-ajustes.module'
+          ).then(m => m.CargosDescargosAjustesModule),
       },
       {
         path: 'depositos-almacenes',
-        loadChildren: () => import('./modules/depositos-almacenes/depositos-almacenes.module')
-          .then(m => m.DepositosAlmacenesModule)
+        loadChildren: () =>
+          import(
+            './modules/depositos-almacenes/depositos-almacenes.module'
+          ).then(m => m.DepositosAlmacenesModule),
       },
       {
         path: 'familia-inventario',
-        loadChildren: () => import('./modules/familia-inventario/familia-inventario.module')
-          .then(m => m.FamiliaInventarioModule)
+        loadChildren: () =>
+          import('./modules/familia-inventario/familia-inventario.module').then(
+            m => m.FamiliaInventarioModule
+          ),
       },
       {
         path: 'productos-servicios',
-        loadChildren: () => import('./modules/productos-servicios-inventario/productos-servicios-inventario.module')
-          .then(m => m.ProductosServiciosInventarioModule)
+        loadChildren: () =>
+          import(
+            './modules/productos-servicios-inventario/productos-servicios-inventario.module'
+          ).then(m => m.ProductosServiciosInventarioModule),
       },
       {
         path: 'reportes',
-        loadChildren: () => import('./modules/reportes/reportes.module')
-          .then(m => m.ReportesModule)
+        loadChildren: () =>
+          import('./modules/reportes/reportes.module').then(
+            m => m.ReportesModule
+          ),
       },
-      ...routesDemoLayout // Demo
+      ...routesDemoLayout, // Demo
     ],
   },
   {
     path: 'auth',
-    loadChildren: () => import('./modules/auth/auth.module')
-      .then(m => m.AuthModule),
-    canActivate: [ RedirectGuard ],
+    loadChildren: () =>
+      import('./modules/auth/auth.module').then(m => m.AuthModule),
+    canActivate: [RedirectGuard],
   },
   ...routesDemo,
   { path: 'notfound', component: NotfoundComponent },
   { path: '**', redirectTo: '/notfound' },
 ];
-
-
 
 @NgModule({
   imports: [
@@ -110,10 +124,9 @@ const routes: Routes = [
       onSameUrlNavigation: 'reload',
       scrollPositionRestoration: 'enabled',
       anchorScrolling: 'enabled',
-      preloadingStrategy: PreloadAllModules
-    }
-    ),
+      preloadingStrategy: PreloadAllModules,
+    }),
   ],
   exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

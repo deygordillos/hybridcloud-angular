@@ -5,12 +5,12 @@ import { CargosDescargosAjustesComponent } from './pages/cargos-descargos-ajuste
 const routes: Routes = [
   {
     path: '',
-    component: CargosDescargosAjustesComponent
-  }
+    component: CargosDescargosAjustesComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class CargosDescargosAjustesRoutingModule { }
+export class CargosDescargosAjustesRoutingModule {}

@@ -5,12 +5,12 @@ import { DepositosAlmacenesComponent } from './pages/depositos-almacenes/deposit
 const routes: Routes = [
   {
     path: '',
-    component: DepositosAlmacenesComponent
-  }
+    component: DepositosAlmacenesComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class DepositosAlmacenesRoutingModule { }
+export class DepositosAlmacenesRoutingModule {}

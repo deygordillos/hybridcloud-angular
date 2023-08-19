@@ -5,12 +5,12 @@ import { FormasPagoComponent } from './pages/formas-pago/formas-pago.component';
 const routes: Routes = [
   {
     path: '',
-    component: FormasPagoComponent
-  }
+    component: FormasPagoComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class FormasPagoRoutingModule { }
+export class FormasPagoRoutingModule {}

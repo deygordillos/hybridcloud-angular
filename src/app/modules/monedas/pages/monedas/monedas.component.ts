@@ -4,20 +4,18 @@ import { AuthService } from '@app/services/auth/auth.service';
 @Component({
   selector: 'app-monedas',
   templateUrl: './monedas.component.html',
-  styleUrls: ['./monedas.component.scss']
+  styleUrls: ['./monedas.component.scss'],
 })
 export class MonedasComponent implements OnInit {
-  constructor(
-    private authService: AuthService
-  ) { }
+  constructor(private authService: AuthService) {}
   ngOnInit(): void {
     this.authService.testToken().subscribe({
-      next: (response) => {
+      next: response => {
         console.log(response);
       },
-      error: (error) => {
+      error: error => {
         console.error(error);
-      }
-    })
+      },
+    });
   }
 }

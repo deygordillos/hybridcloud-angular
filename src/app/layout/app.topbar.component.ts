@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { LayoutService } from "./service/app.layout.service";
+import { LayoutService } from './service/app.layout.service';
 import { environment } from '@environments/environment';
 import { AuthService } from '@app/services/auth/auth.service';
 import { Router } from '@angular/router';
@@ -9,10 +9,9 @@ import { User } from '@app/models/user.model';
 
 @Component({
   selector: 'app-topbar',
-  templateUrl: './app.topbar.component.html'
+  templateUrl: './app.topbar.component.html',
 })
 export class AppTopBarComponent {
-
   items!: MenuItem[];
   isProduction: boolean;
 

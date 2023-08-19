@@ -6,7 +6,7 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 @Component({
   selector: 'app-recuperar-contrasena',
   templateUrl: './recuperar-contrasena.component.html',
-  styleUrls: ['./recuperar-contrasena.component.scss']
+  styleUrls: ['./recuperar-contrasena.component.scss'],
 })
 export class RecuperarContrasenaComponent {
   data: any;
@@ -17,7 +17,10 @@ export class RecuperarContrasenaComponent {
     private dialogConfig: DynamicDialogConfig,
     private utilsService: UtilsService
   ) {
-    this.email = new FormControl('', Validators.compose([Validators.required, Validators.email]));
+    this.email = new FormControl(
+      '',
+      Validators.compose([Validators.required, Validators.email])
+    );
   }
 
   cerrarModal(): void {
@@ -29,7 +32,9 @@ export class RecuperarContrasenaComponent {
       if (!this.email.valid) {
         this.email.markAllAsTouched();
         this.utilsService.openToast({
-          severity: 'info', summary: 'Titulo', detail: 'Contenido'
+          severity: 'info',
+          summary: 'Titulo',
+          detail: 'Contenido',
         });
         return;
       }
