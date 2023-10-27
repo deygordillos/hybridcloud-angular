@@ -3,6 +3,8 @@ import { ModalConfirm } from '@models/modalConfirm.model';
 import { ConfirmationService, Message } from 'primeng/api';
 import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
+import { ItemSelect } from '@app/models/item-select.model';
+import { Status } from '@app/enums/status';
 
 @Injectable({
   providedIn: 'root',
@@ -61,5 +63,16 @@ export class UtilsService {
         reject(null);
       });
     });
+  }
+
+  convertEnumToItemSelectArray<T extends Record<string, string | number>>(
+    enumObj: T
+  ): ItemSelect[] {
+    return Object.entries(enumObj)
+      .filter(([_, value]) => typeof value === 'number')
+      .map(([key, value]) => ({
+        label: key,
+        value: value as string | number,
+      }));
   }
 }

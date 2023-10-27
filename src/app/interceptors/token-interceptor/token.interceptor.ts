@@ -41,7 +41,9 @@ export class TokenInterceptor implements HttpInterceptor {
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    if (request.context.get(CHECK_TOKEN)) request = this.addToken(request);
+    if (request.context.get(CHECK_TOKEN)) {
+      request = this.addToken(request);
+    }
 
     return next.handle(request).pipe(
       catchError(error => {
@@ -98,9 +100,9 @@ export class TokenInterceptor implements HttpInterceptor {
 
   private addToken(request: HttpRequest<any>): HttpRequest<any> {
     const accessToken = this.tokenService.getToken('accessToken');
-    const isValidAccesToken = this.tokenService.isValidToken('accessToken');
+    const isValidRefreshToken = this.tokenService.isValidToken('refreshToken');
 
-    if (accessToken && isValidAccesToken) {
+    if (accessToken && isValidRefreshToken) {
       request = request.clone({
         setHeaders: {
           Authorization: `Bearer ${accessToken}`,

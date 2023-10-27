@@ -22,6 +22,9 @@
       "@app/*": [
         "src/app/*"
       ],
+      "@app/constants/*": [
+        "src/constants/*"
+      ],
       "@environments/*": [
         "src/environments/*"
       ],
