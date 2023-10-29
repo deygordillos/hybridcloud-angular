@@ -58,6 +58,8 @@ export class TokenInterceptor implements HttpInterceptor {
             return throwError(() => console.log('Service not found'));
           }
 
+          if (error.status === 400) return throwError(() => error);
+
           if (
             (error.status === 400 || error.status === 401) &&
             request.url.endsWith('auth/refresh')
@@ -72,9 +74,10 @@ export class TokenInterceptor implements HttpInterceptor {
             this.tokenService.isValidToken('refreshToken');
 
           if (
-            (error.status === 400 || error.status === 401) &&
+            error.status === 401 &&
             refreshToken &&
-            isValidRefreshToken
+            isValidRefreshToken &&
+            error.error.message === 'Invalid Token.'
           ) {
             return this.authService.refreshToken(refreshToken).pipe(
               switchMap(() => {

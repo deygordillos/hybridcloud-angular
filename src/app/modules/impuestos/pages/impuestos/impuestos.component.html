@@ -1,13 +1,19 @@
-<div class="flex align-items-center justify-content-end gap-2">
-  <label>Estatus</label>
-  <p-dropdown
-    [options]="listStatus"
-    optionLabel="label"
-    (onChange)="changeStatus($event)"></p-dropdown>
+<div class="flex align-items-center justify-content-end my-auto gap-2">
+  <div>
+    <label class="mr-2">Estatus</label>
+    <p-dropdown
+      [options]="listStatus"
+      optionLabel="label"
+      (onChange)="changeStatus($event)"></p-dropdown>
+  </div>
+
+  <p-button label="Crear" (click)="createEditTax()"></p-button>
 </div>
 
 <p-table
   [value]="taxes"
+  [loading]="loading"
+  [showLoader]="false"
   [lazy]="true"
   (onLazyLoad)="loadTaxes($event)"
   [paginator]="true"
@@ -15,7 +21,7 @@
   [totalRecords]="recordsTotal"
   [rowsPerPageOptions]="rowsPerPageOptions"
   [showCurrentPageReport]="true"
-  currentPageReportTemplate="Mostrando del {first} al {last} de {totalRecords} registros"
+  [currentPageReportTemplate]="currentPageReportTemplate"
   [tableStyle]="{ 'min-width': '50rem' }">
   <ng-template pTemplate="header">
     <tr>
@@ -46,10 +52,54 @@
         <p-button
           icon="pi pi-pencil"
           styleClass="p-button-rounded p-button-text"
-          pTooltip="Editar"
-          tooltipPosition="top"
-          (click)="editar(tax)">
+          (click)="createEditTax(tax)">
         </p-button>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="loadingbody">
+    <tr *ngFor="let item of loadingItems; let i = index" style="height: 5rem">
+      <td>
+        <p-skeleton height="1.5rem" styleClass="w-6 mx-auto"></p-skeleton>
+      </td>
+      <td>
+        <p-skeleton height="1.5rem" styleClass="w-10 mx-auto"></p-skeleton>
+      </td>
+      <td>
+        <p-skeleton height="1.5rem" styleClass="w-10 mx-auto"></p-skeleton>
+      </td>
+      <td>
+        <p-skeleton height="1.5rem" styleClass="w-6 ml-auto"></p-skeleton>
+      </td>
+      <td>
+        <p-skeleton height="1.5rem" styleClass="w-10 mx-auto"></p-skeleton>
+      </td>
+      <td>
+        <p-skeleton
+          height="1.5rem"
+          [styleClass]="
+            i % 2 === 0 ? 'w-5 mx-auto bg-green-300' : 'w-5 mx-auto bg-red-300'
+          "></p-skeleton>
+      </td>
+      <td>
+        <p-skeleton
+          height="1.5rem"
+          styleClass="w-3 mx-auto bg-blue-300"></p-skeleton>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7">
+        <div class="flex justify-content-center w-full">
+          <p-messages
+            class="w-full"
+            [(value)]="messages"
+            [enableService]="false"
+            [closable]="false"></p-messages>
+        </div>
       </td>
     </tr>
   </ng-template>

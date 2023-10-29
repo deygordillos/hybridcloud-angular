@@ -1,4 +1,4 @@
 export enum TaxType {
-  Exento = 1,
+  Execto = 1,
   Afecto = 2,
 }

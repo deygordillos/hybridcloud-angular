@@ -23,7 +23,7 @@
         "src/app/*"
       ],
       "@app/constants/*": [
-        "src/constants/*"
+        "src/app/constants/*"
       ],
       "@environments/*": [
         "src/environments/*"

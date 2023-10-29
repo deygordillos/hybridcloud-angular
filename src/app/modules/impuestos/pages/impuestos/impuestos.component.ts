@@ -1,10 +1,14 @@
 import { Component } from '@angular/core';
-import { rowsPerPageOptions } from '@app/constants/rowsPerPageOptions';
+import {
+  currentPageReportTemplate,
+  rowsPerPageOptions,
+} from '@app/constants/tables';
 import { Status } from '@app/enums/status';
-import { ItemSelect } from '@app/models/item-select.model';
 import { Tax } from '@app/models/tax.model';
 import { ImpuestosService } from '@app/services/impuestos/impuestos.service';
 import { UtilsService } from '@app/services/utils/utils.service';
+import { FormCrearEditarComponent } from '../../components/form-crear-editar/form-crear-editar.component';
+import { Message, SelectItem } from 'primeng/api';
 
 @Component({
   selector: 'app-impuestos',
@@ -12,23 +16,36 @@ import { UtilsService } from '@app/services/utils/utils.service';
   styleUrls: ['./impuestos.component.scss'],
 })
 export class ImpuestosComponent {
-  rowsPerPageOptions = rowsPerPageOptions;
-  listStatus: ItemSelect[];
+  listStatus: SelectItem[];
   taxes: Tax[] = [];
+  rowsPerPageOptions = rowsPerPageOptions;
+  currentPageReportTemplate = currentPageReportTemplate;
   recordsTotal = 0;
   recordsFiltered = 0;
   status: Status = Status.Activo;
   offset = 0;
   limit = this.rowsPerPageOptions[0];
+  messages: Message[] = [
+    {
+      severity: 'warn',
+      summary: 'Hola',
+      detail: 'No se han encontrado impuestos',
+    },
+  ];
+  loading = true;
+  loadingItems: number[];
 
   constructor(
     private impuestosService: ImpuestosService,
     private utilsService: UtilsService
   ) {
     this.listStatus = this.utilsService.convertEnumToItemSelectArray(Status);
+    this.loadingItems = this.utilsService.generarArrayRange(0, 10);
   }
 
   async getTaxes(): Promise<any> {
+    this.loading = true;
+
     try {
       const response = await this.impuestosService.getTaxes(
         this.status,
@@ -42,11 +59,34 @@ export class ImpuestosComponent {
       this.taxes = data;
     } catch (error) {
       console.error(error);
+    } finally {
+      this.loading = false;
     }
   }
 
-  async editar(tax: Tax): Promise<void> {
-    console.log(tax);
+  async createEditTax(tax: Tax | null = null): Promise<void> {
+    try {
+      const header = tax ? tax.tax_description : 'Crear impuesto';
+      const modal = await this.utilsService.openModal(
+        FormCrearEditarComponent,
+        {
+          header,
+          styleClass: 'w-11 sm:w-10 md:w-8 xl:w-7',
+          data: tax,
+        }
+      );
+
+      if (modal) {
+        this.utilsService.openToast({
+          severity: 'success',
+          summary: 'Felicidades',
+          detail: 'Se ha completado la operación satisfactoriamente',
+        });
+        await this.getTaxes();
+      }
+    } catch (error) {
+      console.log('error');
+    }
   }
 
   async loadTaxes(event: any): Promise<void> {
@@ -58,6 +98,7 @@ export class ImpuestosComponent {
   }
 
   async changeStatus(event: any): Promise<void> {
+    this.offset = 0;
     this.status = event.value.value;
 
     await this.getTaxes();
