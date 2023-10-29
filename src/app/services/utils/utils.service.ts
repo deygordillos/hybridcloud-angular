@@ -1,6 +1,6 @@
 import { Injectable, Type } from '@angular/core';
 import { ModalConfirm } from '@models/modalConfirm.model';
-import { ConfirmationService, Message } from 'primeng/api';
+import { ConfirmationService, Message, SelectItem } from 'primeng/api';
 import { DialogService, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 
@@ -61,5 +61,26 @@ export class UtilsService {
         reject(null);
       });
     });
+  }
+
+  convertEnumToItemSelectArray<T extends Record<string, string | number>>(
+    enumObj: T
+  ): SelectItem[] {
+    return Object.entries(enumObj)
+      .filter(([_, value]) => typeof value === 'number')
+      .map(([key, value]) => ({
+        label: key,
+        value: value as string | number,
+      }));
+  }
+
+  generarArrayRange(
+    numeroInicial: number,
+    cantidadElementos: number
+  ): number[] {
+    return Array.from(
+      { length: cantidadElementos },
+      (_, index) => numeroInicial + index
+    );
   }
 }

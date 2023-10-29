@@ -9,13 +9,14 @@ import { AuthService } from '@app/services/auth/auth.service';
 export class MonedasComponent implements OnInit {
   constructor(private authService: AuthService) {}
   ngOnInit(): void {
-    this.authService.testToken().subscribe({
+    console.log('monedas');
+    /* this.authService.testToken().subscribe({
       next: response => {
         console.log(response);
       },
       error: error => {
         console.error(error);
       },
-    });
+    }); */
   }
 }

@@ -41,7 +41,9 @@ export class TokenInterceptor implements HttpInterceptor {
     request: HttpRequest<unknown>,
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
-    if (request.context.get(CHECK_TOKEN)) request = this.addToken(request);
+    if (request.context.get(CHECK_TOKEN)) {
+      request = this.addToken(request);
+    }
 
     return next.handle(request).pipe(
       catchError(error => {
@@ -55,6 +57,8 @@ export class TokenInterceptor implements HttpInterceptor {
 
             return throwError(() => console.log('Service not found'));
           }
+
+          if (error.status === 400) return throwError(() => error);
 
           if (
             (error.status === 400 || error.status === 401) &&
@@ -70,9 +74,10 @@ export class TokenInterceptor implements HttpInterceptor {
             this.tokenService.isValidToken('refreshToken');
 
           if (
-            (error.status === 400 || error.status === 401) &&
+            error.status === 401 &&
             refreshToken &&
-            isValidRefreshToken
+            isValidRefreshToken &&
+            error.error.message === 'Invalid Token.'
           ) {
             return this.authService.refreshToken(refreshToken).pipe(
               switchMap(() => {
@@ -98,9 +103,9 @@ export class TokenInterceptor implements HttpInterceptor {
 
   private addToken(request: HttpRequest<any>): HttpRequest<any> {
     const accessToken = this.tokenService.getToken('accessToken');
-    const isValidAccesToken = this.tokenService.isValidToken('accessToken');
+    const isValidRefreshToken = this.tokenService.isValidToken('refreshToken');
 
-    if (accessToken && isValidAccesToken) {
+    if (accessToken && isValidRefreshToken) {
       request = request.clone({
         setHeaders: {
           Authorization: `Bearer ${accessToken}`,

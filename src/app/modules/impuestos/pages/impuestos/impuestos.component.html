@@ -1,1 +1,106 @@
-<p>impuestos works!</p>
+<div class="flex align-items-center justify-content-end my-auto gap-2">
+  <div>
+    <label class="mr-2">Estatus</label>
+    <p-dropdown
+      [options]="listStatus"
+      optionLabel="label"
+      (onChange)="changeStatus($event)"></p-dropdown>
+  </div>
+
+  <p-button label="Crear" (click)="createEditTax()"></p-button>
+</div>
+
+<p-table
+  [value]="taxes"
+  [loading]="loading"
+  [showLoader]="false"
+  [lazy]="true"
+  (onLazyLoad)="loadTaxes($event)"
+  [paginator]="true"
+  [rows]="limit"
+  [totalRecords]="recordsTotal"
+  [rowsPerPageOptions]="rowsPerPageOptions"
+  [showCurrentPageReport]="true"
+  [currentPageReportTemplate]="currentPageReportTemplate"
+  [tableStyle]="{ 'min-width': '50rem' }">
+  <ng-template pTemplate="header">
+    <tr>
+      <th class="text-center">Código</th>
+      <th class="text-center">Descripción</th>
+      <th class="text-center">Siglas</th>
+      <th class="text-center">Porcentaje</th>
+      <th class="text-center">Tipo</th>
+      <th class="text-center">Estatus</th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-tax>
+    <tr>
+      <td class="text-center">{{ tax.tax_code }}</td>
+      <td class="text-center">{{ tax.tax_description }}</td>
+      <td class="text-center">{{ tax.tax_siglas }}</td>
+      <td class="text-right">{{ tax.tax_percentage | number: '1.2-2' }} %</td>
+      <td class="text-center">{{ tax.tax_type }}</td>
+      <td class="text-center">
+        <p-tag
+          [value]="tax.tax_status"
+          [severity]="
+            tax.tax_status === 'Activo' ? 'success' : 'danger'
+          "></p-tag>
+      </td>
+      <td class="text-center">
+        <p-button
+          icon="pi pi-pencil"
+          styleClass="p-button-rounded p-button-text"
+          (click)="createEditTax(tax)">
+        </p-button>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="loadingbody">
+    <tr *ngFor="let item of loadingItems; let i = index" style="height: 5rem">
+      <td>
+        <p-skeleton height="1.5rem" styleClass="w-6 mx-auto"></p-skeleton>
+      </td>
+      <td>
+        <p-skeleton height="1.5rem" styleClass="w-10 mx-auto"></p-skeleton>
+      </td>
+      <td>
+        <p-skeleton height="1.5rem" styleClass="w-10 mx-auto"></p-skeleton>
+      </td>
+      <td>
+        <p-skeleton height="1.5rem" styleClass="w-6 ml-auto"></p-skeleton>
+      </td>
+      <td>
+        <p-skeleton height="1.5rem" styleClass="w-10 mx-auto"></p-skeleton>
+      </td>
+      <td>
+        <p-skeleton
+          height="1.5rem"
+          [styleClass]="
+            i % 2 === 0 ? 'w-5 mx-auto bg-green-300' : 'w-5 mx-auto bg-red-300'
+          "></p-skeleton>
+      </td>
+      <td>
+        <p-skeleton
+          height="1.5rem"
+          styleClass="w-3 mx-auto bg-blue-300"></p-skeleton>
+      </td>
+    </tr>
+  </ng-template>
+
+  <ng-template pTemplate="emptymessage">
+    <tr>
+      <td colspan="7">
+        <div class="flex justify-content-center w-full">
+          <p-messages
+            class="w-full"
+            [(value)]="messages"
+            [enableService]="false"
+            [closable]="false"></p-messages>
+        </div>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
