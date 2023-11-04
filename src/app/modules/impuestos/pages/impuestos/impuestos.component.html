@@ -30,6 +30,7 @@
       <th class="text-center">Siglas</th>
       <th class="text-center">Porcentaje</th>
       <th class="text-center">Tipo</th>
+      <th class="text-center">Afecta costos</th>
       <th class="text-center">Estatus</th>
       <th></th>
     </tr>
@@ -41,6 +42,9 @@
       <td class="text-center">{{ tax.tax_siglas }}</td>
       <td class="text-right">{{ tax.tax_percentage | number: '1.2-2' }} %</td>
       <td class="text-center">{{ tax.tax_type }}</td>
+      <td class="text-center">
+        {{ tax.tax_affects_cost === 'Afecta costo' ? 'Si' : 'No' }}
+      </td>
       <td class="text-center">
         <p-tag
           [value]="tax.tax_status"
@@ -74,6 +78,9 @@
       </td>
       <td>
         <p-skeleton height="1.5rem" styleClass="w-10 mx-auto"></p-skeleton>
+      </td>
+      <td>
+        <p-skeleton height="1.5rem" styleClass="w-2 mx-auto"></p-skeleton>
       </td>
       <td>
         <p-skeleton

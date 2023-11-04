@@ -83,11 +83,18 @@ export class FormCrearEditarComponent implements OnInit {
         item => item.label === this.data!.tax_type
       );
 
+      const labelAffectCost =
+        this.data!.tax_affects_cost === 'Afecta costo' ? 'Si' : 'No';
+
+      const selectedAffectCost = this.listTaxAffectsCost.find(
+        item => item.label === labelAffectCost
+      );
+
       this.form.setValue({
         ...this.data,
         tax_status: this.data.tax_status === 'Activo',
         tax_type: selectedTaxType ?? null,
-        tax_affects_cost: this.listTaxAffectsCost[0],
+        tax_affects_cost: selectedAffectCost ?? null,
       });
     }
   }
