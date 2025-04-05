@@ -1,15 +1,34 @@
 # Changelog
-All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## 15.0.0
+**Migration Guide**
+- Upgrade to PrimeNG 15
+- Upgrade to Angular 15
+  
+**Implemented New Features and Enhancements:**
+- Update to PrimeNG 15
+- Update to Angular 15
 
-## [Unreleased]
-### Changed
-- Use python 3.6 instead of python 2.7 in deploy stage of `.gitlab-ci.yml`
+## 14.0.5
 
-## [0.0.1] - 2019-08-20
-### Added
-- Initial release
-- Improvements to the build stage in `.gitlab-ci.yml`
-- Now GitLab will build the production bundle when updates are pushed to the `dev` branch
+- Router updates
+
+## 14.0.4
+
+- Updated UI kit demos
+- Updated PrimeNG
+- Enabled lint
+
+## 14.0.2
+
+- Updated to PrimeNG 14.0.2.
+
+## 14.0.0
+
+- Folder structure updated.
+- Replace app.config.service by layout.service.
+- Updated to PrimeNG 14.
+- Updated to Angular 14.
+- Strict mode support added.
+- Documentation updated.
+- Added max-width in large screens for landing.
