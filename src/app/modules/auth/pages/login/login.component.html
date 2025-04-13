@@ -36,12 +36,12 @@
         </p-message>
 
         <form [formGroup]="formLogin" novalidate (ngSubmit)="login()">
-          <label for="usuario" class="block text-900 text-xl font-medium mb-2"
+          <label for="username" class="block text-900 text-xl font-medium mb-2"
             >Usuario</label
           >
           <input
-            id="usuario"
-            formControlName="usuario"
+            id="username"
+            formControlName="username"
             type="text"
             placeholder="Usuario"
             pInputText
@@ -49,8 +49,8 @@
             pKeyFilter="alphanum"
             [ngClass]="{
               'ng-invalid ng-dirty':
-                formLogin.controls['usuario'].touched &&
-                formLogin.controls['usuario'].hasError('required')
+                formLogin.controls['username'].touched &&
+                formLogin.controls['username'].hasError('required')
             }"
             style="padding: 1rem" />
 
@@ -84,7 +84,7 @@
           <button
             pButton
             pRipple
-            label="Iniciar Sesión"
+            label="Iniciar sesión"
             class="w-full p-3 mt-7 text-xl"
             [loading]="loading"></button>
         </form>

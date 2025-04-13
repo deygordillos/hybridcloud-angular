@@ -1,7 +1,7 @@
 import { User } from './user.model';
 
 export interface LoginResponse {
-  readonly accessToken: string;
-  readonly refreshToken: string;
+  readonly access_token: string;
+  readonly refresh_token: string;
   readonly data: User;
 }

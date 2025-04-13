@@ -20,23 +20,23 @@ export class AuthService {
   ) {}
 
   login(
-    usuario: string,
+    username: string,
     password: string /* , recuerdame: boolean */
   ): Observable<LoginResponse> {
-    const auth = btoa(`${usuario.trim()}:${password.trim()}`);
+    const auth = btoa(`${username.trim()}:${password.trim()}`);
 
     const headers = new HttpHeaders({
       Authorization: `Basic ${auth}`,
     });
 
     return this.httpClient
-      .post<LoginResponse>(`${this.url}/v1/auth/login`, null, { headers })
+      .post<LoginResponse>(`${this.url}/v1/auth/login`, { username: username.trim(), password: password.trim() }, { headers })
       .pipe(
         tap(response => {
-          const { accessToken, refreshToken, data } = response;
+          const { access_token, refresh_token, data } = response;
 
-          if (accessToken && refreshToken)
-            this.saveLogin(accessToken, refreshToken, data);
+          if (access_token && refresh_token)
+            this.saveLogin(access_token, refresh_token, data);
         }),
         map(response => {
           return response;
@@ -44,9 +44,9 @@ export class AuthService {
       );
   }
 
-  saveLogin(accessToken: string, refreshToken: string, user: User): void {
-    this.tokenService.saveToken('accessToken', accessToken);
-    this.tokenService.saveToken('refreshToken', refreshToken);
+  saveLogin(access_token: string, refresh_token: string, user: User): void {
+    this.tokenService.saveToken('accessToken', access_token);
+    this.tokenService.saveToken('refreshToken', refresh_token);
     this.saveUser(user);
   }
 
@@ -63,15 +63,15 @@ export class AuthService {
     return JSON.parse(user);
   }
 
-  refreshToken(refreshToken: string): Observable<LoginResponse> {
+  refreshToken(refresh_token: string): Observable<LoginResponse> {
     return this.httpClient
-      .post<LoginResponse>(`${this.url}/v1/auth/refresh`, { refreshToken })
+      .post<LoginResponse>(`${this.url}/v1/auth/refresh`, { refresh_token })
       .pipe(
         tap(response => {
-          const { accessToken, refreshToken, data } = response;
+          const { access_token, refresh_token, data } = response;
 
-          if (accessToken && refreshToken)
-            this.saveLogin(accessToken, refreshToken, data);
+          if (access_token && refresh_token)
+            this.saveLogin(access_token, refresh_token, data);
         })
       );
   }
