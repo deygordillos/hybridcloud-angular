@@ -26,7 +26,7 @@ export class LoginComponent {
     private route: ActivatedRoute
   ) {
     this.formLogin = new FormGroup({
-      usuario: new FormControl<string | null>(
+      username: new FormControl<string | null>(
         '',
         Validators.compose([Validators.required])
       ),
@@ -48,10 +48,10 @@ export class LoginComponent {
     this.showError = false;
     this.loading = true;
 
-    const { usuario, password } = this.formLogin.getRawValue();
+    const { username, password } = this.formLogin.getRawValue();
 
     this.authService
-      .login(usuario, password)
+      .login(username, password)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: response => {
