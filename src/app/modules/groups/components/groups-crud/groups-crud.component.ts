@@ -13,11 +13,11 @@ import { Group } from '@app/models/group.model';
 })
 export class GroupsCrudComponent implements OnInit {
 
-  productDialog: boolean = false;
+  groupDialog: boolean = false;
 
   inactiveGroupDialog: boolean = false;
 
-  deleteProductsDialog: boolean = false;
+  inactiveGroupsSelectedDialog: boolean = false;
 
   groups: Group[] = [];
 
@@ -61,16 +61,16 @@ export class GroupsCrudComponent implements OnInit {
   openNew() {
     this.group = {};
     this.submitted = false;
-    this.productDialog = true;
+    this.groupDialog = true;
   }
 
-  deleteSelectedProducts() {
-    this.deleteProductsDialog = true;
+  inactivateGroupsSelected() {
+    this.inactiveGroupsSelectedDialog = true;
   }
 
   editProduct(group: Group) {
     this.group = { ...group };
-    this.productDialog = true;
+    this.groupDialog = true;
   }
 
   inactiveGroup(group: Group) {
@@ -85,17 +85,24 @@ export class GroupsCrudComponent implements OnInit {
     this.loadGroups();
   }
   
-  confirmDeleteSelected() {
-    this.deleteProductsDialog = false;
-    this.groups = this.groups.filter(
-      val => !this.selectedProducts.includes(val)
+  async confirmInactiveSelected() {
+    this.inactiveGroupsSelectedDialog = false;
+    
+    await Promise.all(
+      this.selectedProducts.map(group => {
+        group.group_status = 0;
+        return this.groupsService.updateGroup(group);
+      })
     );
+
     this.messageService.add({
       severity: 'success',
-      summary: 'Successful',
-      detail: 'Products Deleted',
+      summary: '¡Éxito!',
+      detail: 'Grupos han sido inactivados',
       life: 3000,
     });
+
+    this.loadGroups();
     this.selectedProducts = [];
   }
 
@@ -118,47 +125,34 @@ export class GroupsCrudComponent implements OnInit {
     });
   }
 
+  addGroup() {
+    this.groupsService.addGroup(this.group).then(res => {
+      this.messageService.add({
+        severity: 'success',
+        summary: '¡Éxito!',
+        detail: 'Grupo ha sido creado',
+        life: 3000,
+      });
+      this.group = {};
+      this.loadGroups();
+    });
+  }
+
   hideDialog() {
-    this.productDialog = false;
+    this.groupDialog = false;
     this.submitted = false;
   }
 
-  saveProduct() {
+  saveGroup() {
     this.submitted = true;
 
     if (this.group.group_name?.trim()) {
       if (this.group.group_id) {
-        // @ts-ignore
-        // this.group.inventoryStatus = this.group.inventoryStatus.value
-        //   ? this.group.group_status!.value
-        //   : this.group.group_status;
-        this.groups[this.findIndexById(this.group.group_id)] = this.group;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Product Updated',
-          life: 3000,
-        });
+        this.updateGroup();
       } else {
-        // this.group.group_id = this.createId();
-        // this.group.group_name = this.createId();
-        // this.group.image = 'product-placeholder.svg';
-        // @ts-ignore
-        // this.group.inventoryStatus = this.group.inventoryStatus
-        //   ? this.group.inventoryStatus.value
-        //   : 'INSTOCK';
-        // this.groups.push(this.group);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Product Created',
-          life: 3000,
-        });
+        this.addGroup();
       }
-
-      this.groups = [...this.groups];
-      this.productDialog = false;
-      this.group = {};
+      this.groupDialog = false;
     }
   }
 

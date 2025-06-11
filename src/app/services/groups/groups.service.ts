@@ -27,6 +27,16 @@ export class GroupsService {
       });
   }
 
+  addGroup(group: Group) {
+    const url = `${environment.API_URL}/v1/groups`;
+    const request = this.httpClient.post<GenericResponse<Group>>(url, group, {
+      context: checkToken(),
+    });
+    const response = lastValueFrom(request);
+    
+    return response.then(res => res);
+  }
+
   updateGroup(group: Group) {
     const url = `${environment.API_URL}/v1/groups/${group.group_id}`;
     const request = this.httpClient.patch<GenericResponse<Group>>(url, group, {
