@@ -12,6 +12,7 @@ import { User } from '@app/models/user.model';
 })
 export class AppMenuComponent implements OnInit {
   model: ItemMenu[] = [];
+  adminModel: ItemMenu[] = [];
   user: User | null = null;
 
   constructor(
@@ -22,6 +23,25 @@ export class AppMenuComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.adminModel = [
+      {
+        label: 'Admin',
+        items: [
+          {
+            label: 'Grupos',
+            icon: 'pi pi-fw pi-sitemap',
+            routerLink: ['/admin/groups'],
+          },
+          {
+            label: 'Empresas',
+            icon: 'pi pi-fw pi-building',
+            routerLink: ['/admin/companies'],
+          },
+        ],
+        visible: true,
+      },
+    ]
+
     this.model = [
       {
         label: 'Home',
@@ -332,5 +352,7 @@ export class AppMenuComponent implements OnInit {
         visible: !environment.production,
       },
     ];
+
+    this.model = [ ...this.adminModel, ...this.model ];
   }
 }
