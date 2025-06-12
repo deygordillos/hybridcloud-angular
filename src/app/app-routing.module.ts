@@ -39,6 +39,19 @@ const routes: Routes = [
     redirectTo: 'auth/login',
     pathMatch: 'full',
   },
+
+  {
+    path: 'admin',
+    component: AppLayoutComponent,
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: 'groups',
+        loadChildren: () =>
+          import('./modules/groups/groups.module').then(m => m.GroupsModule),
+      }
+    ]
+  },
   {
     path: 'app',
     component: AppLayoutComponent,
