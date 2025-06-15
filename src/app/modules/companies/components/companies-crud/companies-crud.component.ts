@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
+import { Company } from '@app/models/company.model';
+import { CompaniesService } from '@app/services/companies/companies.service';
 import { MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
-import { GroupsService } from '@app/services/groups/groups.service';
-import { Group } from '@app/models/group.model';
 
 @Component({
-  selector: 'app-groups-crud',
-  templateUrl: './groups-crud.component.html',
-  styleUrls: ['./groups-crud.component.scss']
+  selector: 'app-companies-crud',
+  templateUrl: './companies-crud.component.html',
+  styleUrls: ['./companies-crud.component.scss']
 })
-export class GroupsCrudComponent implements OnInit {
+export class CompaniesCrudComponent implements OnInit {
 
   groupDialog: boolean = false;
 
@@ -17,11 +17,11 @@ export class GroupsCrudComponent implements OnInit {
 
   inactiveGroupsSelectedDialog: boolean = false;
 
-  groups: Group[] = [];
+  groups: Company[] = [];
 
-  group: Group = {};
+  group: Company = {};
 
-  selectedList: Group[] = [];
+  selectedList: Company[] = [];
 
   submitted: boolean = false;
 
@@ -32,7 +32,7 @@ export class GroupsCrudComponent implements OnInit {
   rowsPerPageOptions = [5, 10, 20];
 
   constructor(
-    private groupsService: GroupsService,
+    private companySerice: CompaniesService,
     private messageService: MessageService) { }
 
   ngOnInit(): void {
@@ -53,7 +53,7 @@ export class GroupsCrudComponent implements OnInit {
   }
 
   loadGroups() {
-    this.groupsService.getGroups().then(data => (this.groups = data));
+    this.companySerice.getGroups().then(data => (this.groups = data));
   }
 
   openNew() {
@@ -66,17 +66,17 @@ export class GroupsCrudComponent implements OnInit {
     this.inactiveGroupsSelectedDialog = true;
   }
 
-  editProduct(group: Group) {
+  editProduct(group: Company) {
     this.group = { ...group };
     this.groupDialog = true;
   }
 
-  inactiveGroup(group: Group) {
+  inactiveGroup(group: Company) {
     this.inactiveGroupDialog = true;
     this.group = { ...group };
   }
 
-  activeGroup(group: Group) {
+  activeGroup(group: Company) {
     this.group = { ...group };
     this.group.group_status = 1; // Set group status to inactive
     this.updateGroup();
@@ -89,7 +89,7 @@ export class GroupsCrudComponent implements OnInit {
     await Promise.all(
       this.selectedList.map(group => {
         group.group_status = 0;
-        return this.groupsService.updateGroup(group);
+        return this.companySerice.updateGroup(group);
       })
     );
 
@@ -110,7 +110,7 @@ export class GroupsCrudComponent implements OnInit {
   }
 
   updateGroup() {
-    this.groupsService.updateGroup(this.group)
+    this.companySerice.updateGroup(this.group)
     .then(res => {
       this.inactiveGroupDialog = false;
       this.messageService.add({
@@ -133,7 +133,7 @@ export class GroupsCrudComponent implements OnInit {
   }
 
   addGroup() {
-    this.groupsService.addGroup(this.group)
+    this.companySerice.addGroup(this.group)
     .then(res => {
       this.messageService.add({
         severity: 'success',

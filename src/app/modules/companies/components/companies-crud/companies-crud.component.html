@@ -1,0 +1,232 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card px-6 py-6">
+      <p-toast></p-toast>
+      <p-toolbar styleClass="mb-4">
+        <ng-template pTemplate="left">
+          <div class="my-2">
+            <button
+              pButton
+              pRipple
+              label=""
+              icon="pi pi-plus"
+              class="p-button-primary mr-2"
+              (click)="openNew()"></button>
+            <button
+              pButton
+              pRipple
+              label=""
+              icon="pi pi-ban"
+              class="p-button-warning"
+              (click)="inactivateGroupsSelected()"
+              [disabled]="
+                !selectedList || !selectedList.length
+              "></button>
+          </div>
+        </ng-template>
+
+      </p-toolbar>
+
+      <p-table
+        #dt
+        [value]="groups"
+        [columns]="cols"
+        responsiveLayout="scroll"
+        [rows]="10"
+        [globalFilterFields]="[
+          'name',
+          'country.name',
+          'representative.name',
+          'status'
+        ]"
+        [paginator]="true"
+        [rowsPerPageOptions]="[10, 20, 30]"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
+        [(selection)]="selectedList"
+        selectionMode="multiple"
+        [rowHover]="true"
+        dataKey="group_id">
+        <ng-template pTemplate="caption">
+          <div
+            class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <h5 class="m-0">Grupos</h5>
+            <span class="block mt-2 md:mt-0 p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                (input)="onGlobalFilter(dt, $event)"
+                placeholder="Buscar..."
+                class="w-full sm:w-auto" />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th pSortableColumn="code">
+              # <p-sortIcon field="code"></p-sortIcon>
+            </th>
+            <th pSortableColumn="name">
+              Nombre <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="inventoryStatus">
+              Estado <p-sortIcon field="inventoryStatus"></p-sortIcon>
+            </th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-group>
+          <tr>
+            <td style="width: 2%;">
+              <p-tableCheckbox [value]="group"></p-tableCheckbox>
+            </td>
+            <td style="width: 4%;">
+              <span class="p-column-title">#</span>
+              <p-chip label="{{ group.group_id }}" styleClass="m-1"></p-chip>
+            </td>
+            <td style="width: 14%; min-width: 10rem">
+              <span class="p-column-title">Nombre</span>
+              {{ group.group_name }}
+            </td>
+            <td style="width: 14%; min-width: 10rem">
+              <span class="p-column-title">Estado</span>
+              <p-tag severity="{{ group.group_status == '1' ? 'success' : 'danger' }}" value="{{ group.group_status == '1' ? 'Activo' : 'Inactivo' }}"></p-tag>
+            </td>
+            <td  style="width: 10%; min-width: 10rem">
+              <div class="flex">
+                <button
+                  pButton
+                  pRipple
+                  icon="pi pi-pencil"
+                  class="p-button-rounded p-button-primary mr-2"
+                  (click)="editProduct(group)"></button>
+                <button
+                  *ngIf="group.group_status == '1'"
+                  pButton
+                  pRipple
+                  icon="pi pi-ban"
+                  class="p-button-rounded p-button-warning"
+                  (click)="inactiveGroup(group)"></button>
+                <button
+                  *ngIf="group.group_status == '0'"
+                  pButton
+                  pRipple
+                  icon="pi pi-check"
+                  class="p-button-rounded p-button-success"
+                  (click)="activeGroup(group)"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <p-dialog
+      [(visible)]="groupDialog"
+      [style]="{ width: '450px' }"
+      header="Grupo"
+      [modal]="true"
+      class="p-fluid">
+      <ng-template pTemplate="content">
+        
+        <div class="field">
+          <label for="name">Nombre</label>
+          <input
+            type="text"
+            pInputText
+            id="name"
+            [(ngModel)]="group.group_name"
+            required
+            autofocus
+            [ngClass]="{ 'ng-invalid ng-dirty': submitted && (!group.group_name || group.group_name.trim().length < 5) }" />
+          <small class="ng-dirty ng-invalid" *ngIf="submitted && !group.group_name">
+            Nombre del grupo es requerido.
+          </small>
+          <small class="ng-dirty ng-invalid" *ngIf="group.group_name && group.group_name.trim().length > 0 && group.group_name.trim().length < 5">
+            El nombre debe tener al menos 5 caracteres.
+          </small>
+        </div>
+
+      </ng-template>
+
+      <ng-template pTemplate="footer">
+        <button
+          pButton
+          pRipple
+          label="Cerrar"
+          icon="pi pi-times"
+          class="p-button-text"
+          (click)="hideDialog()"></button>
+        <button
+          pButton
+          pRipple
+          label="Guardar"
+          icon="pi pi-save"
+          class="p-button-outlined"
+          (click)="saveGroup()"
+          [disabled]="!group.group_name || group.group_name.trim().length < 5"></button>
+      </ng-template>
+    </p-dialog>
+
+    <p-dialog
+      [(visible)]="inactiveGroupDialog"
+      header="¡Confirma!"
+      [modal]="true"
+      [style]="{ width: '450px' }">
+      <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+        <span *ngIf="group">
+          ¿Quieres inactivar el grupo <b>{{ group.group_name }}</b>?
+        </span>
+      </div>
+      <ng-template pTemplate="footer">
+        <button
+          pButton
+          pRipple
+          icon="pi pi-times"
+          class="p-button-text"
+          label="No"
+          (click)="inactiveGroupDialog = false"></button>
+
+        <button
+          pButton
+          pRipple
+          icon="pi pi-check"
+          class="p-button-outlined"
+          label="Sí"
+          (click)="confirmInactivateGroup()"></button>
+      </ng-template>
+    </p-dialog>
+
+    <p-dialog
+      [(visible)]="inactiveGroupsSelectedDialog"
+      header="¡Confirma!"
+      [modal]="true"
+      [style]="{ width: '450px' }">
+      <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+        <span>¿Desea inactivar todos los grupos seleccionados?</span>
+      </div>
+      <ng-template pTemplate="footer">
+        <button
+          pButton
+          pRipple
+          icon="pi pi-times"
+          class="p-button-text"
+          label="No"
+          (click)="inactiveGroupsSelectedDialog = false"></button>
+        <button
+          pButton
+          pRipple
+          icon="pi pi-check"
+          class="p-button-outlined"
+          label="Sí"
+          (click)="confirmInactiveSelected()"></button>
+      </ng-template>
+    </p-dialog>
+  </div>
+</div>

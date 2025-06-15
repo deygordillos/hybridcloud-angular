@@ -49,6 +49,11 @@ const routes: Routes = [
         path: 'groups',
         loadChildren: () =>
           import('./modules/groups/groups.module').then(m => m.GroupsModule),
+      },
+      {
+        path: 'companies',
+        loadChildren: () =>
+          import('./modules/companies/companies.module').then(m => m.CompaniesModule),
       }
     ]
   },
