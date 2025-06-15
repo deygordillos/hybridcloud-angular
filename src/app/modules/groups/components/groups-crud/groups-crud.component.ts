@@ -23,7 +23,7 @@ export class GroupsCrudComponent implements OnInit {
 
   group: Group = {};
 
-  selectedProducts: Group[] = [];
+  selectedList: Group[] = [];
 
   submitted: boolean = false;
 
@@ -89,7 +89,7 @@ export class GroupsCrudComponent implements OnInit {
     this.inactiveGroupsSelectedDialog = false;
     
     await Promise.all(
-      this.selectedProducts.map(group => {
+      this.selectedList.map(group => {
         group.group_status = 0;
         return this.groupsService.updateGroup(group);
       })
@@ -103,7 +103,7 @@ export class GroupsCrudComponent implements OnInit {
     });
 
     this.loadGroups();
-    this.selectedProducts = [];
+    this.selectedList = [];
   }
 
   confirmInactivateGroup() {
@@ -112,7 +112,8 @@ export class GroupsCrudComponent implements OnInit {
   }
 
   updateGroup() {
-    this.groupsService.updateGroup(this.group).then(res => {
+    this.groupsService.updateGroup(this.group)
+    .then(res => {
       this.inactiveGroupDialog = false;
       this.messageService.add({
         severity: 'success',
@@ -122,11 +123,20 @@ export class GroupsCrudComponent implements OnInit {
       });
       this.group = {};
       this.loadGroups();
+    })
+    .catch(error => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: error?.message || 'No se pudo modificar el grupo',
+        life: 3000,
+      });
     });
   }
 
   addGroup() {
-    this.groupsService.addGroup(this.group).then(res => {
+    this.groupsService.addGroup(this.group)
+    .then(res => {
       this.messageService.add({
         severity: 'success',
         summary: '¡Éxito!',
@@ -135,6 +145,14 @@ export class GroupsCrudComponent implements OnInit {
       });
       this.group = {};
       this.loadGroups();
+    })
+    .catch(error => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: error?.message || 'No se pudo crear el grupo',
+        life: 3000,
+      });
     });
   }
 
