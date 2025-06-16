@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { checkToken } from '@app/interceptors/token-interceptor/token.interceptor';
 import { GenericResponse } from '@app/models/generic-response.model';
-import { Group } from '@app/models/group.model';
+import { Company } from '@app/models/company.model';
 import { environment } from '@environments/environment';
 import { lastValueFrom } from 'rxjs';
 
@@ -13,48 +13,48 @@ export class CompaniesService {
 
   constructor(private httpClient: HttpClient) { }
 
-  private sanitizeGroup(group: Group): Partial<Group> {
+  private sanitizeGroup(company: Company): Partial<Company> {
     return {
-      group_id: group.group_id,
-      group_name: group.group_name,
-      group_status: group.group_status
+      company_id: company.company_id,
+      company_name: company.company_name,
+      company_status: company.company_status
     };
   }
 
-  private validateGroup(group: Group): void {
-    if (!group.group_name || typeof group.group_name !== 'string' || group.group_name.trim().length === 0) {
-      throw new Error('El nombre del grupo es obligatorio y debe ser una cadena no vacía.');
+  private validateGroup(company: Company): void {
+    if (!company.company_name || typeof company.company_name !== 'string' || company.company_name.trim().length === 0) {
+      throw new Error('El nombre de la empresa es obligatorio y debe ser una cadena no vacía.');
     }
-    if (group.group_name.trim().length < 5) {
-      throw new Error('El nombre del grupo debe tener al menos 5 caracteres.');
+    if (company.company_name.trim().length < 5) {
+      throw new Error('El nombre de la empresa debe tener al menos 5 caracteres.');
     }
-    if (group.group_status && (typeof group.group_status !== 'number' || ![1, 0].includes(group.group_status))) {
-      throw new Error('El estado del grupo debe ser "1 - activo" o "0 - inactivo".');
+    if (company.company_status && (typeof company.company_status !== 'number' || ![1, 0].includes(company.company_status))) {
+      throw new Error('El estado de la empresa debe ser "1 - activo" o "0 - inactivo".');
     }
   }
 
-  async getGroups(offset: number = 0, limit: number = 10): Promise<Group[]> {
-    const url = `${environment.API_URL}/v1/groups?offset=${offset}&limit=${limit}`;
+  async getCompanies(offset: number = 0, limit: number = 10): Promise<Company[]> {
+    const url = `${environment.API_URL}/v1/companies?offset=${offset}&limit=${limit}`;
 
     try {
       const res = await lastValueFrom(
-        this.httpClient.get<GenericResponse<Group>>(url, {
+        this.httpClient.get<GenericResponse<Company>>(url, {
           context: checkToken(),
         })
       );
-      return res.data as Group[];
+      return res.data as Company[];
     } catch (error) {
       throw error;
     }
   }
 
-  async addGroup(group: Group): Promise<GenericResponse<Group>> {
-    this.validateGroup(group);
-    const url = `${environment.API_URL}/v1/groups`;
-    const sanitizedGroup = this.sanitizeGroup(group);
+  async addCompany(company: Company): Promise<GenericResponse<Company>> {
+    this.validateGroup(company);
+    const url = `${environment.API_URL}/v1/companies`;
+    const sanitizedGroup = this.sanitizeGroup(company);
     try {
       const res = await lastValueFrom(
-        this.httpClient.post<GenericResponse<Group>>(url, sanitizedGroup, {
+        this.httpClient.post<GenericResponse<Company>>(url, sanitizedGroup, {
           context: checkToken(),
         })
       );
@@ -64,13 +64,13 @@ export class CompaniesService {
     }
   }
 
-  async updateGroup(group: Group): Promise<GenericResponse<Group>> {
-    this.validateGroup(group);
-    const url = `${environment.API_URL}/v1/groups/${group.group_id}`;
-    const sanitizedGroup = this.sanitizeGroup(group);
+  async updateCompany(company: Company): Promise<GenericResponse<Company>> {
+    this.validateGroup(company);
+    const url = `${environment.API_URL}/v1/companies/${company.group_id}`;
+    const sanitizedGroup = this.sanitizeGroup(company);
     try {
       const res = await lastValueFrom(
-        this.httpClient.patch<GenericResponse<Group>>(url, sanitizedGroup, {
+        this.httpClient.patch<GenericResponse<Company>>(url, sanitizedGroup, {
           context: checkToken(),
         })
       );

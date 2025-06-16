@@ -6,8 +6,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { ButtonModule } from 'primeng/button';
 import { RippleModule } from 'primeng/ripple';
 import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
-import { RatingModule } from 'primeng/rating';
+import { TabViewModule } from 'primeng/tabview';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { DropdownModule } from 'primeng/dropdown';
@@ -16,6 +15,9 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
 import { ChipModule } from 'primeng/chip';
 import { TagModule } from 'primeng/tag';
+import { CheckboxModule } from 'primeng/checkbox';
+import { TooltipModule } from 'primeng/tooltip';
+import { ColorPickerModule } from 'primeng/colorpicker';
 
 import { CompaniesRoutingModule } from './companies-routing.module';
 import { CompaniesCrudComponent } from './components/companies-crud/companies-crud.component';
@@ -34,8 +36,7 @@ import { CompaniesCrudComponent } from './components/companies-crud/companies-cr
     ButtonModule,
     RippleModule,
     ToastModule,
-    ToolbarModule,
-    RatingModule,
+    TabViewModule,
     InputTextModule,
     InputTextareaModule,
     DropdownModule,
@@ -43,7 +44,10 @@ import { CompaniesCrudComponent } from './components/companies-crud/companies-cr
     InputNumberModule,
     DialogModule,
     ChipModule,
-    TagModule
+    TagModule,
+    CheckboxModule,
+    TooltipModule,
+    ColorPickerModule
   ]
 })
 export class CompaniesModule { }

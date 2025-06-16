@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Company } from '@app/models/company.model';
+import { Group } from '@app/models/group.model';
 import { CompaniesService } from '@app/services/companies/companies.service';
-import { MessageService } from 'primeng/api';
+import { GroupsService } from '@app/services/groups/groups.service';
+import { MessageService, SelectItem } from 'primeng/api';
 import { Table } from 'primeng/table';
 
 @Component({
@@ -11,15 +13,17 @@ import { Table } from 'primeng/table';
 })
 export class CompaniesCrudComponent implements OnInit {
 
-  groupDialog: boolean = false;
+  companyDialog: boolean = false;
 
-  inactiveGroupDialog: boolean = false;
+  inactiveDialog: boolean = false;
 
-  inactiveGroupsSelectedDialog: boolean = false;
+  inactiveSelectedDialog: boolean = false;
+  isCompanyPrincipal: boolean = false;
 
-  groups: Company[] = [];
+  groups: SelectItem[] = [];
+  companies: Company[] = [];
 
-  group: Company = {};
+  company: Company = {};
 
   selectedList: Company[] = [];
 
@@ -32,11 +36,18 @@ export class CompaniesCrudComponent implements OnInit {
   rowsPerPageOptions = [5, 10, 20];
 
   constructor(
-    private companySerice: CompaniesService,
+    private groupsService: GroupsService,
+    private companyService: CompaniesService,
     private messageService: MessageService) { }
 
   ngOnInit(): void {
-    this.loadGroups();
+    this.groupsService.getGroups().then(data => {
+      this.groups = data.map(group => ({
+        label: group.group_name,
+        value: group.group_id
+      }));
+    });
+    this.loadCompanies();
 
     this.cols = [
       { field: 'product', header: 'Product' },
@@ -52,88 +63,88 @@ export class CompaniesCrudComponent implements OnInit {
     ];
   }
 
-  loadGroups() {
-    this.companySerice.getGroups().then(data => (this.groups = data));
+  loadCompanies() {
+    this.companyService.getCompanies().then(data => (this.companies = data));
   }
 
   openNew() {
-    this.group = {};
+    this.company = {};
     this.submitted = false;
-    this.groupDialog = true;
+    this.companyDialog = true;
   }
 
-  inactivateGroupsSelected() {
-    this.inactiveGroupsSelectedDialog = true;
+  inactivateSelected() {
+    this.inactiveSelectedDialog = true;
   }
 
-  editProduct(group: Company) {
-    this.group = { ...group };
-    this.groupDialog = true;
+  editCompany(company: Company) {
+    this.company = { ...company };
+    this.companyDialog = true;
   }
 
-  inactiveGroup(group: Company) {
-    this.inactiveGroupDialog = true;
-    this.group = { ...group };
+  inactiveCompany(company: Company) {
+    this.inactiveDialog = true;
+    this.company = { ...company };
   }
 
-  activeGroup(group: Company) {
-    this.group = { ...group };
-    this.group.group_status = 1; // Set group status to inactive
-    this.updateGroup();
-    this.loadGroups();
+  activeCompany(company: Company) {
+    this.company = { ...company };
+    this.company.company_status = 1; // Set group status to inactive
+    this.updateCompany();
+    this.loadCompanies();
   }
   
   async confirmInactiveSelected() {
-    this.inactiveGroupsSelectedDialog = false;
+    this.inactiveSelectedDialog = false;
     
     await Promise.all(
-      this.selectedList.map(group => {
-        group.group_status = 0;
-        return this.companySerice.updateGroup(group);
+      this.selectedList.map(company => {
+        company.company_status = 0;
+        return this.companyService.updateCompany(company);
       })
     );
 
     this.messageService.add({
       severity: 'success',
       summary: '¡Éxito!',
-      detail: 'Grupos han sido inactivados',
+      detail: 'Empresas han sido inactivadas',
       life: 3000,
     });
 
-    this.loadGroups();
+    this.loadCompanies();
     this.selectedList = [];
   }
 
   confirmInactivateGroup() {
-    this.group.group_status = 0; // Set group status to inactive
-    this.updateGroup();
+    this.company.company_status = 0; // Set company status to inactive
+    this.updateCompany();
   }
 
-  updateGroup() {
-    this.companySerice.updateGroup(this.group)
+  updateCompany() {
+    this.companyService.updateCompany(this.company)
     .then(res => {
-      this.inactiveGroupDialog = false;
+      this.inactiveDialog = false;
       this.messageService.add({
         severity: 'success',
         summary: '¡Éxito!',
-        detail: 'Grupo actualizado',
+        detail: 'Empresa actualizada',
         life: 3000,
       });
-      this.group = {};
-      this.loadGroups();
+      this.company = {};
+      this.loadCompanies();
     })
     .catch(error => {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: error?.message || 'No se pudo modificar el grupo',
+        detail: error?.message || 'No se pudo modificar la empresa',
         life: 3000,
       });
     });
   }
 
-  addGroup() {
-    this.companySerice.addGroup(this.group)
+  addCompany() {
+    this.companyService.addCompany(this.company)
     .then(res => {
       this.messageService.add({
         severity: 'success',
@@ -141,8 +152,8 @@ export class CompaniesCrudComponent implements OnInit {
         detail: 'Grupo ha sido creado',
         life: 3000,
       });
-      this.group = {};
-      this.loadGroups();
+      this.company = {};
+      this.loadCompanies();
     })
     .catch(error => {
       this.messageService.add({
@@ -155,27 +166,27 @@ export class CompaniesCrudComponent implements OnInit {
   }
 
   hideDialog() {
-    this.groupDialog = false;
+    this.companyDialog = false;
     this.submitted = false;
   }
 
-  saveGroup() {
+  saveCompany() {
     this.submitted = true;
 
-    if (this.group.group_name?.trim()) {
-      if (this.group.group_id) {
-        this.updateGroup();
+    if (this.company.company_name?.trim()) {
+      if (this.company.company_id) {
+        //this.updateGroup();
       } else {
-        this.addGroup();
+        this.addCompany();
       }
-      this.groupDialog = false;
+      this.companyDialog = false;
     }
   }
 
   findIndexById(id: number): number {
     let index = -1;
-    for (let i = 0; i < this.groups.length; i++) {
-      if (this.groups[i].group_id === id) {
+    for (let i = 0; i < this.companies.length; i++) {
+      if (this.companies[i].company_id === id) {
         index = i;
         break;
       }
