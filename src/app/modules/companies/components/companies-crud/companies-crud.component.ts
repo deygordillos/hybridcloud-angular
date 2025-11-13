@@ -126,6 +126,17 @@ export class CompaniesCrudComponent implements OnInit {
     if (this.company.group_id && typeof this.company.group_id === 'object') {
       this.company.group_id = (this.company.group_id as any).group_id;
     }
+    if (this.company.country_id && typeof this.company.country_id === 'object') {
+      this.company.country_id = (this.company.country_id as any).country_id;
+    }
+    // Convertir fechas string a objetos Date para p-calendar
+    if (this.company.company_start && typeof this.company.company_start === 'string') {
+      this.company.company_start = new Date(this.company.company_start);
+    }
+    if (this.company.company_end && typeof this.company.company_end === 'string') {
+      this.company.company_end = new Date(this.company.company_end);
+    }
+    console.log(this.company);
     this.companyDialog = true;
   }
 
