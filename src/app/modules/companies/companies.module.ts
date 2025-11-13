@@ -18,6 +18,7 @@ import { TagModule } from 'primeng/tag';
 import { CheckboxModule } from 'primeng/checkbox';
 import { TooltipModule } from 'primeng/tooltip';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { CalendarModule } from 'primeng/calendar';
 
 import { CompaniesRoutingModule } from './companies-routing.module';
 import { CompaniesCrudComponent } from './components/companies-crud/companies-crud.component';
@@ -47,7 +48,8 @@ import { CompaniesCrudComponent } from './components/companies-crud/companies-cr
     TagModule,
     CheckboxModule,
     TooltipModule,
-    ColorPickerModule
+    ColorPickerModule,
+    CalendarModule
   ]
 })
 export class CompaniesModule { }

@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+﻿import { Component, OnInit } from '@angular/core';
 import { Company } from '@app/models/company.model';
-import { Group } from '@app/models/group.model';
+import { Country } from '@app/models/country.model';
 import { CompaniesService } from '@app/services/companies/companies.service';
 import { GroupsService } from '@app/services/groups/groups.service';
+import { CountriesService } from '@app/services/countries/countries.service';
 import { MessageService, SelectItem } from 'primeng/api';
 import { Table } from 'primeng/table';
 
@@ -14,61 +15,104 @@ import { Table } from 'primeng/table';
 export class CompaniesCrudComponent implements OnInit {
 
   companyDialog: boolean = false;
-
   inactiveDialog: boolean = false;
-
   inactiveSelectedDialog: boolean = false;
-  isCompanyPrincipal: boolean = false;
+  registerAdminDialog: boolean = false;
 
   groups: SelectItem[] = [];
+  countries: SelectItem[] = [];
   companies: Company[] = [];
 
   company: Company = {};
 
+  adminData = {
+    username: '',
+    password: '',
+    first_name: '',
+    email: ''
+  };
+
   selectedList: Company[] = [];
-
   submitted: boolean = false;
-
   cols: any[] = [];
-
   statuses: any[] = [];
-
   rowsPerPageOptions = [5, 10, 20];
 
   constructor(
     private groupsService: GroupsService,
     private companyService: CompaniesService,
+    private countriesService: CountriesService,
     private messageService: MessageService) { }
 
   ngOnInit(): void {
+    this.loadGroups();
+    this.loadCountries();
+    this.loadCompanies();
+
+    this.cols = [
+      { field: 'company_id', header: 'ID' },
+      { field: 'company_name', header: 'Nombre' },
+      { field: 'company_razon_social', header: 'Razón Social' },
+      { field: 'company_email', header: 'Email' },
+      { field: 'company_status', header: 'Estado' },
+    ];
+
+    this.statuses = [
+      { label: 'Activo', value: 1 },
+      { label: 'Inactivo', value: 0 }
+    ];
+  }
+
+  loadGroups() {
     this.groupsService.getGroups().then(data => {
       this.groups = data.map(group => ({
         label: group.group_name,
         value: group.group_id
       }));
+    }).catch(error => {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudieron cargar los grupos',
+        life: 3000,
+      });
     });
-    this.loadCompanies();
+  }
 
-    this.cols = [
-      { field: 'product', header: 'Product' },
-      { field: 'price', header: 'Price' },
-      { field: 'category', header: 'Category' },
-      { field: 'rating', header: 'Reviews' },
-      { field: 'inventoryStatus', header: 'Status' },
-    ];
-
-    this.statuses = [
-      { label: 'Activo', value: '1' },
-      { label: 'Inactivo', value: '0' }
-    ];
+  loadCountries() {
+    this.countriesService.getCountries().then(data => {
+      this.countries = data.map(country => ({
+        label: country.country_name,
+        value: country.country_id
+      }));
+    }).catch(error => {
+      console.warn('No se pudieron cargar los países:', error);
+      this.countries = [
+        { label: 'Venezuela', value: 1 },
+        { label: 'Colombia', value: 2 },
+        { label: 'México', value: 3 },
+        { label: 'Estados Unidos', value: 4 },
+      ];
+    });
   }
 
   loadCompanies() {
-    this.companyService.getCompanies().then(data => (this.companies = data));
+    this.companyService.getCompanies().then(data => (this.companies = data))
+      .catch(error => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudieron cargar las empresas',
+          life: 3000,
+        });
+      });
   }
 
   openNew() {
-    this.company = {};
+    this.company = {
+      company_status: 1,
+      company_is_principal: false
+    };
     this.submitted = false;
     this.companyDialog = true;
   }
@@ -79,6 +123,9 @@ export class CompaniesCrudComponent implements OnInit {
 
   editCompany(company: Company) {
     this.company = { ...company };
+    if (this.company.group_id && typeof this.company.group_id === 'object') {
+      this.company.group_id = (this.company.group_id as any).group_id;
+    }
     this.companyDialog = true;
   }
 
@@ -89,80 +136,133 @@ export class CompaniesCrudComponent implements OnInit {
 
   activeCompany(company: Company) {
     this.company = { ...company };
-    this.company.company_status = 1; // Set group status to inactive
+    this.company.company_status = 1;
     this.updateCompany();
-    this.loadCompanies();
+  }
+
+  openRegisterAdmin(company: Company) {
+    this.company = { ...company };
+    this.adminData = {
+      username: '',
+      password: '',
+      first_name: '',
+      email: ''
+    };
+    this.registerAdminDialog = true;
   }
   
   async confirmInactiveSelected() {
     this.inactiveSelectedDialog = false;
-    
-    await Promise.all(
-      this.selectedList.map(company => {
-        company.company_status = 0;
-        return this.companyService.updateCompany(company);
-      })
-    );
-
-    this.messageService.add({
-      severity: 'success',
-      summary: '¡Éxito!',
-      detail: 'Empresas han sido inactivadas',
-      life: 3000,
-    });
-
-    this.loadCompanies();
-    this.selectedList = [];
+    try {
+      await Promise.all(
+        this.selectedList.map(company => {
+          company.company_status = 0;
+          return this.companyService.updateCompany(company);
+        })
+      );
+      this.messageService.add({
+        severity: 'success',
+        summary: '¡Éxito!',
+        detail: 'Empresas han sido inactivadas',
+        life: 3000,
+      });
+      this.loadCompanies();
+      this.selectedList = [];
+    } catch (error: any) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: error?.message || 'No se pudieron inactivar las empresas',
+        life: 3000,
+      });
+    }
   }
 
-  confirmInactivateGroup() {
-    this.company.company_status = 0; // Set company status to inactive
+  confirmInactivateCompany() {
+    this.company.company_status = 0;
     this.updateCompany();
   }
 
   updateCompany() {
     this.companyService.updateCompany(this.company)
-    .then(res => {
-      this.inactiveDialog = false;
-      this.messageService.add({
-        severity: 'success',
-        summary: '¡Éxito!',
-        detail: 'Empresa actualizada',
-        life: 3000,
+      .then(res => {
+        this.companyDialog = false;
+        this.inactiveDialog = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: '¡Éxito!',
+          detail: 'Empresa actualizada',
+          life: 3000,
+        });
+        this.company = {};
+        this.loadCompanies();
+      })
+      .catch(error => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error?.message || 'No se pudo modificar la empresa',
+          life: 3000,
+        });
       });
-      this.company = {};
-      this.loadCompanies();
-    })
-    .catch(error => {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: error?.message || 'No se pudo modificar la empresa',
-        life: 3000,
-      });
-    });
   }
 
   addCompany() {
     this.companyService.addCompany(this.company)
-    .then(res => {
-      this.messageService.add({
-        severity: 'success',
-        summary: '¡Éxito!',
-        detail: 'Grupo ha sido creado',
-        life: 3000,
+      .then(res => {
+        this.companyDialog = false;
+        this.messageService.add({
+          severity: 'success',
+          summary: '¡Éxito!',
+          detail: 'Empresa ha sido creada',
+          life: 3000,
+        });
+        this.company = {};
+        this.loadCompanies();
+      })
+      .catch(error => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: error?.message || 'No se pudo crear la empresa',
+          life: 3000,
+        });
       });
-      this.company = {};
-      this.loadCompanies();
-    })
-    .catch(error => {
+  }
+
+  async registerAdmin() {
+    if (!this.company.company_id) {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
-        detail: error?.message || 'No se pudo crear el grupo',
+        detail: 'Debe seleccionar una empresa',
         life: 3000,
       });
-    });
+      return;
+    }
+    try {
+      await this.companyService.registerAdmin(this.company.company_id, this.adminData);
+      this.messageService.add({
+        severity: 'success',
+        summary: '¡Éxito!',
+        detail: 'Administrador registrado correctamente',
+        life: 3000,
+      });
+      this.registerAdminDialog = false;
+      this.adminData = {
+        username: '',
+        password: '',
+        first_name: '',
+        email: ''
+      };
+    } catch (error: any) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: error?.message || 'No se pudo registrar el administrador',
+        life: 3000,
+      });
+    }
   }
 
   hideDialog() {
@@ -170,16 +270,31 @@ export class CompaniesCrudComponent implements OnInit {
     this.submitted = false;
   }
 
+  hideRegisterAdminDialog() {
+    this.registerAdminDialog = false;
+  }
+
   saveCompany() {
     this.submitted = true;
-
-    if (this.company.company_name?.trim()) {
-      if (this.company.company_id) {
-        //this.updateGroup();
-      } else {
-        this.addCompany();
+    if (!this.company.company_name?.trim()) {
+      return;
+    }
+    if (this.company.company_id) {
+      this.updateCompany();
+    } else {
+      if (!this.company.group_id || !this.company.company_razon_social?.trim() ||
+          !this.company.company_id_fiscal?.trim() || !this.company.company_email?.trim() ||
+          !this.company.company_phone1?.trim() || !this.company.company_start ||
+          !this.company.company_end || !this.company.country_id) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Advertencia',
+          detail: 'Por favor complete todos los campos obligatorios',
+          life: 3000,
+        });
+        return;
       }
-      this.companyDialog = false;
+      this.addCompany();
     }
   }
 
@@ -191,7 +306,6 @@ export class CompaniesCrudComponent implements OnInit {
         break;
       }
     }
-
     return index;
   }
 
@@ -199,4 +313,17 @@ export class CompaniesCrudComponent implements OnInit {
     table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
   }
 
+  getGroupName(groupId: any): string {
+    if (typeof groupId === 'object' && groupId?.group_name) {
+      return groupId.group_name;
+    }
+    const group = this.groups.find(g => g.value === groupId);
+    return group?.label || 'N/A';
+  }
+
+  formatDate(date: Date | string | undefined): string {
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toLocaleDateString();
+  }
 }

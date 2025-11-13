@@ -2,8 +2,8 @@ import { Group } from "./group.model";
 
 export interface Company {
   company_id?: number;
-  group_id?: Group;
-  company_is_principal?: number;
+  group_id?: Group | number;
+  company_is_principal?: boolean | number;
   company_name?: string;
   company_status?: number;
   created_at?: Date;
@@ -23,5 +23,7 @@ export interface Company {
   company_contact_name?: string;
   company_contact_phone?: string;
   company_contact_email?: string;
-
+  company_start?: Date | string;
+  company_end?: Date | string;
+  country_id?: number;
 }
