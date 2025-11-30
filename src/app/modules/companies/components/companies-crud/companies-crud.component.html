@@ -1,0 +1,462 @@
+<div class="grid">
+  <div class="col-12">
+    <div class="card px-6 py-6">
+      <p-toast></p-toast>
+      <p-table #dt [value]="companies" [columns]="cols" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="[
+          'company_name',
+          'company_razon_social',
+          'company_id_fiscal',
+          'company_email',
+          'company_phone1',
+          'company_address'
+        ]" [paginator]="true" [rowsPerPageOptions]="[10, 20, 30]" [showCurrentPageReport]="true"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros" [(selection)]="selectedList"
+        selectionMode="multiple" [rowHover]="true" dataKey="company_id">
+        <ng-template pTemplate="caption">
+          <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <h5 class="m-0"><i class="pi pi-fw pi-building"></i> Empresas</h5>
+            <span class="block mt-2 md:mt-0 p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Buscar..."
+                class="w-full sm:w-auto" />
+              <button pButton pRipple label="" icon="pi pi-plus" class="p-button-primary ml-2" pTooltip="Añadir empresa"
+                (click)="openNew()"></button>
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th pSortableColumn="code">
+              # <p-sortIcon field="code"></p-sortIcon>
+            </th>
+            <th pSortableColumn="name">
+              Nombre <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="group">
+              Grupo <p-sortIcon field="group"></p-sortIcon>
+            </th>
+            <th pSortableColumn="inventoryStatus">
+              Estado <p-sortIcon field="inventoryStatus"></p-sortIcon>
+            </th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-company>
+          <tr>
+            <td style="width: 2%;">
+              <p-tableCheckbox [value]="company"></p-tableCheckbox>
+            </td>
+            <td style="width: 4%;">
+              <span class="p-column-title">#</span>
+              <p-chip label="{{ company.company_id }}" styleClass="m-1"></p-chip>
+            </td>
+            <td style="width: 14%; min-width: 10rem">
+              <span class="p-column-title">Nombre</span>
+              {{ company.company_name }}
+            </td>
+            <td style="width: 14%; min-width: 10rem">
+              <span class="p-column-title">Grupo</span>
+              {{ getGroupName(company.group_id) }}
+            </td>
+            <td style="width: 14%; min-width: 10rem">
+              <span class="p-column-title">Estado</span>
+              <p-tag severity="{{ company.company_status == '1' ? 'success' : 'danger' }}"
+                value="{{ company.company_status == '1' ? 'Activo' : 'Inactivo' }}"></p-tag>
+            </td>
+            <td style="width: 10%; min-width: 10rem">
+              <div class="flex">
+                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-primary mr-2"
+                  pTooltip="Editar" (click)="editCompany(company)"></button>
+                <button *ngIf="company.company_status == 1" pButton pRipple icon="pi pi-ban"
+                  class="p-button-rounded p-button-warning mr-2" pTooltip="Inactivar"
+                  (click)="inactiveCompany(company)"></button>
+                <button *ngIf="company.company_status == 0" pButton pRipple icon="pi pi-check"
+                  class="p-button-rounded p-button-success mr-2" pTooltip="Activar"
+                  (click)="activeCompany(company)"></button>
+                <button pButton pRipple 
+                  [icon]="hasAdminUsers(company) ? 'pi pi-users' : 'pi pi-user-plus'"
+                  [class]="hasAdminUsers(company) ? 'p-button-rounded p-button-help' : 'p-button-rounded p-button-info'" 
+                  [pTooltip]="hasAdminUsers(company) ? 'Ver administradores' : 'Registrar administrador'"
+                  (click)="openRegisterAdmin(company)"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+    <p-dialog [(visible)]="companyDialog" [style]="{ width: '850px' }" header="Empresa" [modal]="true" class="p-fluid">
+      <ng-template pTemplate="content">
+
+        <p-tabView orientation="left">
+          <p-tabPanel header="Principal" class="line-height-3 m-0">
+            
+            <div class="p-fluid p-formgrid grid">
+
+              <div class="field col-12 md:col-4">
+                <label for="group">Grupo (*)</label>
+                <p-dropdown [options]="groups" [(ngModel)]="company.group_id"
+                  placeholder="Selecciona un grupo"></p-dropdown>
+                <small class="ng-dirty ng-invalid" *ngIf="submitted && !company.group_id">
+                  Grupo es requerido.
+                </small>
+              </div>
+
+              <div class="field col-12 md:col-5">
+                <label for="company_name">Nombre (*)</label>
+                <input type="text" pInputText id="company_name" [(ngModel)]="company.company_name" required autofocus
+                  [ngClass]="{ 'ng-invalid ng-dirty': submitted && (!company.company_name || company.company_name.trim().length < 3) }" />
+                <small class="ng-dirty ng-invalid" *ngIf="submitted && !company.company_name">
+                  Nombre de la empresa es requerido.
+                </small>
+                <small class="ng-dirty ng-invalid"
+                  *ngIf="company.company_name && company.company_name.trim().length > 0 && company.company_name.trim().length < 3">
+                  El nombre debe tener al menos 3 caracteres.
+                </small>
+              </div>
+
+              <div class="field col-12 md:col-1">
+                <label for="company_color">Color</label>
+                <p-colorPicker [(ngModel)]="company.company_color"></p-colorPicker>
+              </div>
+
+              <div class="field-checkbox col-12 md:col-2">
+                <p-checkbox name="is_principal" value="1" [(ngModel)]="company.company_is_principal"
+                  id="company_is_principal"></p-checkbox>
+                <label for="company_is_principal">¿principal?</label>
+              </div>
+            </div>
+
+            <div class="p-fluid p-formgrid grid">
+              <div class="field col-12 md:col-3">
+                <label for="name">ID fiscal (*)</label>
+                <input type="text" pInputText id="name" [(ngModel)]="company.company_id_fiscal" required
+                  [ngClass]="{ 'ng-invalid ng-dirty': submitted && (!company.company_id_fiscal || company.company_id_fiscal.trim().length < 5) }" />
+                <small class="ng-dirty ng-invalid" *ngIf="submitted && !company.company_id_fiscal">
+                  ID es requerido.
+                </small>
+                <small class="ng-dirty ng-invalid"
+                  *ngIf="company.company_id_fiscal && company.company_id_fiscal.trim().length > 0 && company.company_id_fiscal.trim().length < 5">
+                  ID debe tener al menos 5 caracteres.
+                </small>
+              </div>
+
+              <div class="field col-12 md:col-9">
+                <label for="name">Razón social (*)</label>
+                <input type="text" pInputText id="name" [(ngModel)]="company.company_razon_social" required
+                  [ngClass]="{ 'ng-invalid ng-dirty': submitted && (!company.company_razon_social || company.company_razon_social.trim().length < 5) }" />
+                <small class="ng-dirty ng-invalid" *ngIf="submitted && !company.company_razon_social">
+                  Razón social es requerido.
+                </small>
+                <small class="ng-dirty ng-invalid"
+                  *ngIf="company.company_razon_social && company.company_razon_social.trim().length > 0 && company.company_razon_social.trim().length < 5">
+                  Razón social debe tener al menos 5 caracteres.
+                </small>
+              </div>
+            </div>
+            
+            <div class="p-fluid p-formgrid grid">
+              <div class="field col-12 ">
+                <label for="company_address">Dirección (*)</label>
+                <input type="text" pInputText id="company_address" [(ngModel)]="company.company_address" required autofocus
+                  [ngClass]="{ 'ng-invalid ng-dirty': submitted && (!company.company_address || company.company_address.trim().length < 5) }" />
+                <small class="ng-dirty ng-invalid" *ngIf="submitted && !company.company_address">
+                  Dirección es requerido.
+                </small>
+                <small class="ng-dirty ng-invalid"
+                  *ngIf="company.company_address && company.company_address.trim().length > 0 && company.company_address.trim().length < 5">
+                  Dirección debe tener al menos 5 caracteres.
+                </small>
+              </div>
+            </div>
+
+            <div class="p-fluid p-formgrid grid">
+              <div class="field col-12 md:col-4">
+                <label for="company_email">Correo (*)</label>
+                <input type="email" pInputText id="company_email" [(ngModel)]="company.company_email" required
+                  [ngClass]="{ 'ng-invalid ng-dirty': submitted && (!company.company_email || company.company_email.trim().length < 5) }" />
+                <small class="ng-dirty ng-invalid" *ngIf="submitted && !company.company_email">
+                  Correo es requerido.
+                </small>
+                <small class="ng-dirty ng-invalid"
+                  *ngIf="company.company_email && company.company_email.trim().length > 0 && company.company_email.trim().length < 5">
+                  Correo debe tener al menos 5 caracteres.
+                </small>
+              </div>
+
+              <div class="field col-12 md:col-4">
+                <label for="company_phone1">Teléfono 1 (*)</label>
+                <input type="text" pInputText id="company_phone1" [(ngModel)]="company.company_phone1" required
+                  [ngClass]="{ 'ng-invalid ng-dirty': submitted && !company.company_phone1 }" />
+                <small class="ng-dirty ng-invalid" *ngIf="submitted && !company.company_phone1">
+                  Teléfono es requerido.
+                </small>
+              </div>
+
+              <div class="field col-12 md:col-4">
+                <label for="company_phone2">Teléfono 2</label>
+                <input type="text" pInputText id="company_phone2" [(ngModel)]="company.company_phone2" />
+              </div>
+            </div>
+
+            <div class="p-fluid p-formgrid grid">
+              <div class="field col-12 md:col-4">
+                <label for="country_id">País (*)</label>
+                <p-dropdown [options]="countries" [(ngModel)]="company.country_id"
+                  placeholder="Selecciona un país"
+                  [ngClass]="{ 'ng-invalid ng-dirty': submitted && !company.country_id }"></p-dropdown>
+                <small class="ng-dirty ng-invalid" *ngIf="submitted && !company.country_id">
+                  País es requerido.
+                </small>
+              </div>
+
+              <div class="field col-12 md:col-4">
+                <label for="company_start">Fecha de inicio (*)</label>
+                <p-calendar [(ngModel)]="company.company_start" dateFormat="yy-mm-dd"
+                  [ngClass]="{ 'ng-invalid ng-dirty': submitted && !company.company_start }"></p-calendar>
+                <small class="ng-dirty ng-invalid" *ngIf="submitted && !company.company_start">
+                  Fecha de inicio es requerida.
+                </small>
+              </div>
+
+              <div class="field col-12 md:col-4">
+                <label for="company_end">Fecha de fin (*)</label>
+                <p-calendar [(ngModel)]="company.company_end" dateFormat="yy-mm-dd"
+                  [ngClass]="{ 'ng-invalid ng-dirty': submitted && !company.company_end }"></p-calendar>
+                <small class="ng-dirty ng-invalid" *ngIf="submitted && !company.company_end">
+                  Fecha de fin es requerida.
+                </small>
+              </div>
+            </div>
+          </p-tabPanel>
+
+          <p-tabPanel header="Redes sociales" class="line-height-3 m-0">
+            <div class="p-fluid p-formgrid grid">
+              <div class="col-12 md:col-12">
+                <div class="field grid">
+                  <label htmlFor="company_url_logo" class="col-12 mb-2 md:col-4 md:mb-0">Logo</label>
+                  <div class="col-12 md:col-8">
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-globe"></i>
+                      <input type="text" pInputText id="company_url_logo" [(ngModel)]="company.company_url_logo" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-fluid p-formgrid grid">
+              <div class="col-12 md:col-12">
+                <div class="field grid">
+                  <label htmlFor="company_website" class="col-12 mb-2 md:col-4 md:mb-0">Sitio web</label>
+                  <div class="col-12 md:col-8">
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-globe"></i>
+                      <input type="text" pInputText id="company_website" [(ngModel)]="company.company_website" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-fluid p-formgrid grid">
+              <div class="col-12 md:col-12">
+                <div class="field grid">
+                  <label htmlFor="company_facebook" class="col-12 mb-2 md:col-4 md:mb-0">Facebook</label>
+                  <div class="col-12 md:col-8">
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-facebook"></i>
+                      <input type="text" pInputText id="company_website" [(ngModel)]="company.company_facebook" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-fluid p-formgrid grid">
+              <div class="col-12 md:col-12">
+                <div class="field grid">
+                  <label htmlFor="company_instagram" class="col-12 mb-2 md:col-4 md:mb-0">Instagram</label>
+                  <div class="col-12 md:col-8">
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-instagram"></i>
+                      <input type="text" pInputText id="company_website" [(ngModel)]="company.company_instagram" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </p-tabPanel>
+          <p-tabPanel header="Contactos" class="line-height-3 m-0">
+            <div class="p-fluid p-formgrid grid">
+              <div class="col-12 md:col-12">
+                <div class="field grid">
+                  <label htmlFor="company_contact_name" class="col-12 mb-2 md:col-4 md:mb-0">Nombre de contacto</label>
+                  <div class="col-12 md:col-8">
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-user"></i>
+                      <input type="text" pInputText id="company_url_logo" [(ngModel)]="company.company_contact_name" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-fluid p-formgrid grid">
+              <div class="col-12 md:col-12">
+                <div class="field grid">
+                  <label htmlFor="company_contact_phone" class="col-12 mb-2 md:col-4 md:mb-0">Teléfono de contacto</label>
+                  <div class="col-12 md:col-8">
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-phone"></i>
+                      <input type="text" pInputText id="company_url_logo" [(ngModel)]="company.company_contact_phone" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-fluid p-formgrid grid">
+              <div class="col-12 md:col-12">
+                <div class="field grid">
+                  <label htmlFor="company_contact_email" class="col-12 mb-2 md:col-4 md:mb-0">Correo de contacto</label>
+                  <div class="col-12 md:col-8">
+                    <span class="p-input-icon-left">
+                      <i class="pi pi-envelope"></i>
+                      <input type="text" pInputText id="company_url_logo" [(ngModel)]="company.company_contact_email" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </p-tabPanel>
+        </p-tabView>
+
+      </ng-template>
+
+      <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cerrar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Guardar" icon="pi pi-save" class="p-button-outlined" (click)="saveCompany()"
+          [disabled]="!company.company_name || company.company_name.trim().length < 5"></button>
+      </ng-template>
+    </p-dialog>
+
+    <p-dialog [(visible)]="inactiveDialog" header="¡Confirma!" [modal]="true" [style]="{ width: '450px' }">
+      <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+        <span *ngIf="company">
+          ¿Quieres inactivar la empresa <b>{{ company.company_name }}</b>?
+        </span>
+      </div>
+      <ng-template pTemplate="footer">
+        <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+          (click)="inactiveDialog = false"></button>
+
+        <button pButton pRipple icon="pi pi-check" class="p-button-outlined" label="Sí"
+          (click)="confirmInactivateCompany()"></button>
+      </ng-template>
+    </p-dialog>
+
+    <p-dialog [(visible)]="inactiveSelectedDialog" header="¡Confirma!" [modal]="true" [style]="{ width: '450px' }">
+      <div class="flex align-items-center justify-content-center">
+        <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+        <span>¿Desea inactivar todas las empresas seleccionadas?</span>
+      </div>
+      <ng-template pTemplate="footer">
+        <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+          (click)="inactiveSelectedDialog = false"></button>
+        <button pButton pRipple icon="pi pi-check" class="p-button-outlined" label="Sí"
+          (click)="confirmInactiveSelected()"></button>
+      </ng-template>
+    </p-dialog>
+
+    <!-- Diálogo para ver administradores -->
+    <p-dialog [(visible)]="viewAdminsDialog" [style]="{ width: '700px' }" 
+      [header]="'Administradores de ' + company.company_name" [modal]="true">
+      <ng-template pTemplate="content">
+        <div class="card">
+          <p-table [value]="getAdminUsers(company)" [tableStyle]="{ 'min-width': '100%' }" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 10%">ID</th>
+                <th style="width: 25%">Usuario</th>
+                <th style="width: 30%">Email</th>
+                <th style="width: 20%">Nombre</th>
+                <th style="width: 15%">Admin</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-admin>
+              <tr>
+                <td>
+                  <p-chip [label]="admin.user_id?.toString() || 'N/A'" styleClass="p-chip-sm"></p-chip>
+                </td>
+                <td>{{ admin.username || 'N/A' }}</td>
+                <td>{{ admin.email || 'N/A' }}</td>
+                <td>{{ admin.first_name || '' }} {{ admin.last_name || '' }}</td>
+                <td>
+                  <p-tag 
+                    [severity]="admin.is_company_admin === 1 ? 'success' : 'warning'" 
+                    [value]="admin.is_company_admin === 1 ? 'Sí' : 'No'">
+                  </p-tag>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5" class="text-center">
+                  <i class="pi pi-info-circle" style="font-size: 2rem; color: var(--primary-color);"></i>
+                  <p class="mt-3">No hay administradores asignados a esta empresa.</p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cerrar" icon="pi pi-times" class="p-button-text" 
+          (click)="hideViewAdminsDialog()"></button>
+      </ng-template>
+    </p-dialog>
+
+    <!-- Diálogo para registrar administrador -->
+    <p-dialog [(visible)]="registerAdminDialog" [style]="{ width: '550px' }" header="Registrar Administrador" [modal]="true" class="p-fluid">
+      <ng-template pTemplate="content">
+        <div class="p-fluid p-formgrid grid">
+          <div class="field col-12">
+            <label for="admin_username">Usuario (*)</label>
+            <input type="text" pInputText id="admin_username" [(ngModel)]="adminData.username" required
+              placeholder="Mínimo 3 caracteres" />
+          </div>
+
+          <div class="field col-12">
+            <label for="admin_first_name">Nombre (*)</label>
+            <input type="text" pInputText id="admin_first_name" [(ngModel)]="adminData.first_name" required
+              placeholder="Nombre completo" />
+          </div>
+
+          <div class="field col-12">
+            <label for="admin_email">Correo (*)</label>
+            <input type="email" pInputText id="admin_email" [(ngModel)]="adminData.email" required
+              placeholder="correo@ejemplo.com" />
+          </div>
+
+          <div class="field col-12">
+            <label for="admin_password">Contraseña (*)</label>
+            <input type="password" pInputText id="admin_password" [(ngModel)]="adminData.password" required
+              placeholder="Mínimo 8 caracteres (mayúscula, minúscula y número)" />
+            <small>La contraseña debe tener al menos 8 caracteres e incluir mayúsculas, minúsculas y números.</small>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideRegisterAdminDialog()"></button>
+        <button pButton pRipple label="Registrar" icon="pi pi-save" class="p-button-outlined" (click)="registerAdmin()"
+          [disabled]="!adminData.username || !adminData.first_name || !adminData.email || !adminData.password"></button>
+      </ng-template>
+    </p-dialog>
+  </div>
+</div>

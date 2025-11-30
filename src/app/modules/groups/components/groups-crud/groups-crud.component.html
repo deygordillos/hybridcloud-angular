@@ -10,7 +10,7 @@
               pRipple
               label=""
               icon="pi pi-plus"
-              class="p-button-success mr-2"
+              class="p-button-primary mr-2"
               (click)="openNew()"></button>
             <button
               pButton
@@ -20,7 +20,7 @@
               class="p-button-warning"
               (click)="inactivateGroupsSelected()"
               [disabled]="
-                !selectedProducts || !selectedProducts.length
+                !selectedList || !selectedList.length
               "></button>
           </div>
         </ng-template>
@@ -43,14 +43,13 @@
         [rowsPerPageOptions]="[10, 20, 30]"
         [showCurrentPageReport]="true"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} registros"
-        [(selection)]="selectedProducts"
+        [(selection)]="selectedList"
         selectionMode="multiple"
         [rowHover]="true"
         dataKey="group_id">
         <ng-template pTemplate="caption">
-          <div
-            class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-            <h5 class="m-0">Grupos</h5>
+          <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+            <h5 class="m-0"><i class="pi pi-fw pi-sitemap"></i> Grupos</h5>
             <span class="block mt-2 md:mt-0 p-input-icon-left">
               <i class="pi pi-search"></i>
               <input
@@ -142,9 +141,12 @@
             [(ngModel)]="group.group_name"
             required
             autofocus
-            [ngClass]="{ 'ng-invalid ng-dirty': submitted && !group.group_name }" />
+            [ngClass]="{ 'ng-invalid ng-dirty': submitted && (!group.group_name || group.group_name.trim().length < 5) }" />
           <small class="ng-dirty ng-invalid" *ngIf="submitted && !group.group_name">
             Nombre del grupo es requerido.
+          </small>
+          <small class="ng-dirty ng-invalid" *ngIf="group.group_name && group.group_name.trim().length > 0 && group.group_name.trim().length < 5">
+            El nombre debe tener al menos 5 caracteres.
           </small>
         </div>
 
@@ -164,13 +166,14 @@
           label="Guardar"
           icon="pi pi-save"
           class="p-button-outlined"
-          (click)="saveGroup()"></button>
+          (click)="saveGroup()"
+          [disabled]="!group.group_name || group.group_name.trim().length < 5"></button>
       </ng-template>
     </p-dialog>
 
     <p-dialog
       [(visible)]="inactiveGroupDialog"
-      header="Confirm"
+      header="¡Confirma!"
       [modal]="true"
       [style]="{ width: '450px' }">
       <div class="flex align-items-center justify-content-center">
