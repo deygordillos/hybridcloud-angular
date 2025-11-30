@@ -18,6 +18,7 @@ export class CompaniesCrudComponent implements OnInit {
   inactiveDialog: boolean = false;
   inactiveSelectedDialog: boolean = false;
   registerAdminDialog: boolean = false;
+  viewAdminsDialog: boolean = false;
 
   groups: SelectItem[] = [];
   countries: SelectItem[] = [];
@@ -153,13 +154,33 @@ export class CompaniesCrudComponent implements OnInit {
 
   openRegisterAdmin(company: Company) {
     this.company = { ...company };
-    this.adminData = {
-      username: '',
-      password: '',
-      first_name: '',
-      email: ''
-    };
-    this.registerAdminDialog = true;
+    
+    // Si ya tiene administradores, mostrar lista
+    if (this.hasAdminUsers(company)) {
+      this.viewAdminsDialog = true;
+    } else {
+      // Si no tiene, mostrar formulario de registro
+      this.adminData = {
+        username: '',
+        password: '',
+        first_name: '',
+        email: ''
+      };
+      this.registerAdminDialog = true;
+    }
+  }
+
+  viewAdminUsers(company: Company) {
+    this.company = { ...company };
+    this.viewAdminsDialog = true;
+  }
+
+  hideViewAdminsDialog() {
+    this.viewAdminsDialog = false;
+  }
+
+  getAdminUsers(company: Company): any[] {
+    return (company as any).admin_users || [];
   }
   
   async confirmInactiveSelected() {
@@ -336,5 +357,21 @@ export class CompaniesCrudComponent implements OnInit {
     if (!date) return '';
     const d = new Date(date);
     return d.toLocaleDateString();
+  }
+
+  hasAdminUsers(company: Company): boolean {
+    return Array.isArray((company as any).admin_users) && (company as any).admin_users.length > 0;
+  }
+
+  formatAssignedDate(dateString: string | undefined): string {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-ES', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 }

@@ -76,8 +76,10 @@
                 <button *ngIf="company.company_status == 0" pButton pRipple icon="pi pi-check"
                   class="p-button-rounded p-button-success mr-2" pTooltip="Activar"
                   (click)="activeCompany(company)"></button>
-                <button pButton pRipple icon="pi pi-user-plus"
-                  class="p-button-rounded p-button-info" pTooltip="Registrar administrador"
+                <button pButton pRipple 
+                  [icon]="hasAdminUsers(company) ? 'pi pi-users' : 'pi pi-user-plus'"
+                  [class]="hasAdminUsers(company) ? 'p-button-rounded p-button-help' : 'p-button-rounded p-button-info'" 
+                  [pTooltip]="hasAdminUsers(company) ? 'Ver administradores' : 'Registrar administrador'"
                   (click)="openRegisterAdmin(company)"></button>
               </div>
             </td>
@@ -368,6 +370,54 @@
           (click)="inactiveSelectedDialog = false"></button>
         <button pButton pRipple icon="pi pi-check" class="p-button-outlined" label="Sí"
           (click)="confirmInactiveSelected()"></button>
+      </ng-template>
+    </p-dialog>
+
+    <!-- Diálogo para ver administradores -->
+    <p-dialog [(visible)]="viewAdminsDialog" [style]="{ width: '700px' }" 
+      [header]="'Administradores de ' + company.company_name" [modal]="true">
+      <ng-template pTemplate="content">
+        <div class="card">
+          <p-table [value]="getAdminUsers(company)" [tableStyle]="{ 'min-width': '100%' }" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 10%">ID</th>
+                <th style="width: 25%">Usuario</th>
+                <th style="width: 30%">Email</th>
+                <th style="width: 20%">Nombre</th>
+                <th style="width: 15%">Admin</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-admin>
+              <tr>
+                <td>
+                  <p-chip [label]="admin.user_id?.toString() || 'N/A'" styleClass="p-chip-sm"></p-chip>
+                </td>
+                <td>{{ admin.username || 'N/A' }}</td>
+                <td>{{ admin.email || 'N/A' }}</td>
+                <td>{{ admin.first_name || '' }} {{ admin.last_name || '' }}</td>
+                <td>
+                  <p-tag 
+                    [severity]="admin.is_company_admin === 1 ? 'success' : 'warning'" 
+                    [value]="admin.is_company_admin === 1 ? 'Sí' : 'No'">
+                  </p-tag>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5" class="text-center">
+                  <i class="pi pi-info-circle" style="font-size: 2rem; color: var(--primary-color);"></i>
+                  <p class="mt-3">No hay administradores asignados a esta empresa.</p>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cerrar" icon="pi pi-times" class="p-button-text" 
+          (click)="hideViewAdminsDialog()"></button>
       </ng-template>
     </p-dialog>
 
